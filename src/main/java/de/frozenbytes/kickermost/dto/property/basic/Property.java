@@ -3,9 +3,11 @@ package de.frozenbytes.kickermost.dto.property.basic;
 
 import com.google.common.base.Preconditions;
 
+import java.util.Objects;
+
 public abstract class Property<T> {
 
-    final T value;
+    protected final T value;
 
     public Property(T value) {
         super();
@@ -17,4 +19,21 @@ public abstract class Property<T> {
         return value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Property<?> property = (Property<?>) o;
+        return Objects.equals(value, property.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }
