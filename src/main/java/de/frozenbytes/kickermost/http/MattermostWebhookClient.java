@@ -24,15 +24,9 @@ public class MattermostWebhookClient {
 
     public void postMessage(){
         HttpPost request = new HttpPost(webhookUrl);
-        request.addHeader("content-type", "application/json");
+        request.addHeader("content-type", "application/json;charset=UTF-8");
 
-        StringEntity params;
-        try {
-            params = new StringEntity(MattermostMessageBuilder.createJsonMessage());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Error in encoding of param string");
-        }
-
+        StringEntity params = new StringEntity(MattermostMessageBuilder.createJsonMessage(), "UTF-8");
         request.setEntity(params);
         try {
             HttpResponse response = httpClient.execute(request);
