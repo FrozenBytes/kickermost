@@ -2,14 +2,14 @@ package de.frozenbytes.kickermost.dto.type;
 
 public enum StoryEvent {
 
-    GOAL(":ball:"),
-    GOAL_OWN(":red_ball:"),
-    EXCHANGE(":arrow:"),
-    YELLOW_CARD(":yellow:"),
-    RED_CARD(":red:"),
-    YELLOW_RED_CARD(":rellow-red:"),
-    PENALTY(":critical:"),
-    PENALTY_FAILURE(":penalty_failure"),
+    GOAL(":soccer:"),
+    GOAL_OWN(":soccer:"),
+    EXCHANGE(":arrows_clockwise:"),
+    YELLOW_CARD(":ledger:"),
+    RED_CARD(":closed_book:"),
+    YELLOW_RED_CARD(":ledger::closed_book:"),
+    PENALTY(":goal_net:"),
+    PENALTY_FAILURE(":goal_net:"),
     DEFAULT("")
     ;
 

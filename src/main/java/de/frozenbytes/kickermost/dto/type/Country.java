@@ -1,5 +1,7 @@
 package de.frozenbytes.kickermost.dto.type;
 
+import java.util.Arrays;
+
 public enum Country {
     ARGENTINA("Argentinien", ":argentina:"),
     AUSTRALIA("Australien", ":australia:"),
@@ -8,8 +10,8 @@ public enum Country {
     COLOMBIA("Kolumbien", ":colombia:"),
     COSTA_RICA("Costa Rica", ":costa_rica:"),
     CROATIA("Kroatien", ":croatia:"),
-    DENMARK("D\u00E4nemark", ":denmark:"),
-    EGYPT("\u00C4gypten", ":egypt:"),
+    DENMARK("Dänemark", ":denmark:"),
+    EGYPT("Ägypten", ":egypt:"),
     ENGLAND("England", ":uk:"),
     FRANCE("Frankreich", ":fr:"),
     GERMANY("Deutschland", ":de:"),
@@ -25,7 +27,7 @@ public enum Country {
     POLAND("Polen", ":poland:"),
     PORTUGAL("Portugal", ":portugal:"),
     RUSSIA("Russland", ":ru:"),
-    SAUDI_ARABIA("Saudi Arabien", ":saudi_arabia:"),
+    SAUDI_ARABIA("Saudi-Arabien", ":saudi_arabia:"),
     SENEGAL("Senegal", ":senegal:"),
     SERBIA("Serbien", ":serbia:"),
     SPAIN("Spanien", ":es:"),
@@ -48,5 +50,9 @@ public enum Country {
 
     public String getMattermostCode() {
         return mattermostCode;
+    }
+
+    public static Country getCountryByName(final String name){
+        return Arrays.stream(values()).filter(country -> country.getName().equals(name)).findFirst().orElse(null);
     }
 }
