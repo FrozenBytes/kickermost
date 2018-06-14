@@ -4,13 +4,11 @@ import com.google.common.base.Preconditions;
 import de.frozenbytes.kickermost.concurrent.exchange.ExchangeStorage;
 import de.frozenbytes.kickermost.dto.*;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
-import de.frozenbytes.kickermost.dto.property.basic.Property;
 import de.frozenbytes.kickermost.exception.ReloadPollingSourceException;
 import de.frozenbytes.kickermost.exception.TickerNotInSourceException;
 import de.frozenbytes.kickermost.exception.UnexpectedThreadException;
 import de.frozenbytes.kickermost.io.src.PollingSource;
 import de.frozenbytes.kickermost.io.src.PollingSourceFactory;
-import de.frozenbytes.kickermost.io.src.rss.RssParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public final class PollingThread {
 
@@ -40,10 +37,7 @@ public final class PollingThread {
         super();
         thread = new Thread(this::execute);
         thread.setDaemon(true); // terminate this thread, if the superior user thread terminates
-        tickerUrlList = new RssParser(RSS_URL).parse().stream()
-                .map(Property::getValue)
-                .map(TickerUrl::create)
-                .collect(Collectors.toList());
+        tickerUrlList = PollingSourceFactory.parseRssFeed(RSS_URL);
     }
 
     public void start(){
