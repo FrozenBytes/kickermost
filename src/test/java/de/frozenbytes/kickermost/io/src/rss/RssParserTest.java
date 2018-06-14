@@ -1,5 +1,6 @@
 package de.frozenbytes.kickermost.io.src.rss;
 
+import de.frozenbytes.kickermost.concurrent.PollingThread;
 import de.frozenbytes.kickermost.dto.property.RssLink;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class RssParserTest {
 
-    private static final String URL = "http://rss.kicker.de/live/wm";
+    private static final String URL = PollingThread.RSS_URL;
 
     private RssParser parser;
 

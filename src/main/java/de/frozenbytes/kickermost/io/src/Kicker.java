@@ -5,6 +5,8 @@ import de.frozenbytes.kickermost.dto.Story;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.property.*;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
+import de.frozenbytes.kickermost.exception.ReloadPollingSourceException;
+import de.frozenbytes.kickermost.exception.TickerNotInSourceException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,8 +18,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
 public class Kicker implements PollingSource {
-
-    private static final String url = "http://www.kicker.de/news/fussball/nationalelf/startseite/fussball-nationalteams-freundschaftsspiele/2018/4/4204625/livematch_deutschland_saudi-arabien.html";
 
     private static final String CSS_ROOT = "#tabSpielereignisse";
     private static final String CSS_MATCH = CSS_ROOT + " tr.trTickerBegegnung";
@@ -36,32 +36,38 @@ public class Kicker implements PollingSource {
     private static final String CSS_STORY_SUB_DESCRIPTION = "div.ltereigkurz > p";
     private static final String CSS_STORY_SUB_ICON = "div.tickerIcon";
 
+    private final TickerUrl tickerUrl;
+    private Document document;
 
-    private final Document document;
 
-    public Kicker(final String url) throws IOException {
+    public Kicker(final TickerUrl tickerUrl) throws ReloadPollingSourceException, TickerNotInSourceException {
         super();
-        Preconditions.checkNotNull(url, "url should not be null!");
-        Preconditions.checkArgument(!url.trim().isEmpty(), "url should not be empty!");
-        this.document = Jsoup.connect(url).get();
+        Preconditions.checkNotNull(tickerUrl, "tickerUrl should not be null!");
+        this.tickerUrl = tickerUrl;
+        reload();
     }
 
+    @Override
     public TeamScore getTeamAScore(){
         return TeamScore.create(Integer.parseInt(getFirstText(document, CSS_TEAM_A_SCORE)));
     }
 
+    @Override
     public TeamScore getTeamBScore(){
         return TeamScore.create(Integer.parseInt(getFirstText(document, CSS_TEAM_B_SCORE)));
     }
 
+    @Override
     public TeamName getTeamAName(){
         return TeamName.create(getFirstText(document, CSS_TEAM_A_NAME));
     }
 
+    @Override
     public TeamName getTeamBName(){
         return TeamName.create(getFirstText(document, CSS_TEAM_B_NAME));
     }
 
+    @Override
     public Story getStory(){
         final Story story = new Story();
 
@@ -98,6 +104,18 @@ public class Kicker implements PollingSource {
         }
 
         return story;
+    }
+
+    @Override
+    public void reload() throws ReloadPollingSourceException, TickerNotInSourceException {
+        try {
+            document = Jsoup.connect(tickerUrl.getValue()).get();
+            if(document.selectFirst(CSS_ROOT) == null){
+                throw new TickerNotInSourceException(tickerUrl);
+            }
+        } catch (IOException e) {
+            throw new ReloadPollingSourceException(tickerUrl, e);
+        }
     }
 
     private String getFirstText(final Document document, final String cssSelector){

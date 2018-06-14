@@ -3,6 +3,8 @@ package de.frozenbytes.kickermost.dto;
 import com.google.common.base.Preconditions;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 
+import java.util.Objects;
+
 public final class Ticker {
 
     private final TickerUrl tickerUrl;
@@ -21,5 +23,18 @@ public final class Ticker {
 
     public Match getMatch() {
         return match;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ticker ticker = (Ticker) o;
+        return Objects.equals(tickerUrl, ticker.tickerUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tickerUrl);
     }
 }

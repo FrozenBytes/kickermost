@@ -8,19 +8,19 @@ import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Team;
 import de.frozenbytes.kickermost.dto.property.TeamName;
 import de.frozenbytes.kickermost.dto.property.TeamScore;
+import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import de.frozenbytes.kickermost.http.MattermostWebhookClient;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
 
 public class KickerTest {
 
     @BeforeClass
-    public static void beforeClass() throws IOException {
-        kicker = new Kicker(URL);
+    public static void beforeClass() throws Exception {
+        kicker = new Kicker(TickerUrl.create(URL));
     }
 
     private static final String URL = "http://www.kicker.de/news/fussball/nationalelf/startseite/fussball-nationalteams-freundschaftsspiele/2018/4/4204625/livematch_deutschland_saudi-arabien.html";
