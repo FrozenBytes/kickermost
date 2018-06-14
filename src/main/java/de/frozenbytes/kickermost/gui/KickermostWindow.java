@@ -58,6 +58,10 @@ public class KickermostWindow {
         createListener();
     }
 
+    public static void main(String[] args){
+        new KickermostWindow();
+    }
+
     private void fillPropertyFields(){
         Properties properties = PropertiesLoader.loadProperties();
         txtWebhookUrl.setText(properties.get(PropertiesLoader.WEBHOOK_URL).toString());
