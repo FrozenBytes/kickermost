@@ -1,5 +1,6 @@
 package de.frozenbytes.kickermost.http;
 
+import de.frozenbytes.kickermost.PropertiesLoader;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import org.apache.http.HttpResponse;
@@ -16,15 +17,13 @@ import java.io.IOException;
 public class MattermostWebhookClient {
 
     private final HttpClient httpClient;
-    // TODO: via config file
-    private final String webhookUrl = "";
 
     public MattermostWebhookClient() {
         httpClient = HttpClientBuilder.create().build();
     }
 
     public void postMessage(final Match match, final StoryPart messageParameters){
-        HttpPost request = new HttpPost(webhookUrl);
+        HttpPost request = new HttpPost(PropertiesLoader.loadProperties().getProperty(PropertiesLoader.WEBHOOK_URL));
         request.addHeader("content-type", "application/json;charset=UTF-8");
 
         StringEntity params = new StringEntity(MattermostMessageBuilder.createJsonMessage(match, messageParameters), "UTF-8");

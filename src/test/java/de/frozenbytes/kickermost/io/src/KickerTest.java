@@ -11,6 +11,7 @@ import de.frozenbytes.kickermost.dto.property.TeamScore;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import de.frozenbytes.kickermost.http.MattermostWebhookClient;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class KickerTest {
      */
 
     @Test
+    @Ignore
     public void postGoalTest() {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
@@ -80,6 +82,7 @@ public class KickerTest {
     }
 
     @Test
+    @Ignore
     public void postOwnGoalTest() {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
@@ -93,6 +96,7 @@ public class KickerTest {
     }
 
     @Test
+    @Ignore
     public void postExchangeTest() {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
@@ -106,6 +110,7 @@ public class KickerTest {
     }
 
     @Test
+    @Ignore
     public void postYellowCardTest() {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
@@ -119,6 +124,7 @@ public class KickerTest {
     }
 
     @Test
+    @Ignore
     public void postRedCardTest() {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
@@ -132,6 +138,7 @@ public class KickerTest {
     }
 
     @Test
+    @Ignore
     public void postYellowRedCardTest() {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
@@ -145,6 +152,7 @@ public class KickerTest {
     }
 
     @Test
+    @Ignore
     public void postPenaltyTest() {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
@@ -158,6 +166,7 @@ public class KickerTest {
     }
 
     @Test
+    @Ignore
     public void postPenaltyFailureTest() {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
@@ -171,6 +180,7 @@ public class KickerTest {
     }
 
     @Test
+    @Ignore
     public void postDefaultTest() {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
