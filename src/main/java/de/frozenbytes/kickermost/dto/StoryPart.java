@@ -7,7 +7,7 @@ import de.frozenbytes.kickermost.dto.type.StoryEvent;
 
 import java.time.LocalTime;
 
-public class StoryPart {
+public final class StoryPart {
 
     private final LocalTime time;
     private final GameMinute gameMinute;

@@ -1,4 +1,4 @@
-package de.frozenbytes.kickermost.io.rs;
+package de.frozenbytes.kickermost.io.src;
 
 import com.google.common.base.Preconditions;
 import de.frozenbytes.kickermost.dto.Story;
@@ -15,7 +15,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
-public class Kicker implements PollingTarget {
+public class Kicker implements PollingSource {
 
     private static final String url = "http://www.kicker.de/news/fussball/nationalelf/startseite/fussball-nationalteams-freundschaftsspiele/2018/4/4204625/livematch_deutschland_saudi-arabien.html";
 

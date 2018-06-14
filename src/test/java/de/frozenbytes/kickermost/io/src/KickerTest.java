@@ -1,4 +1,4 @@
-package de.frozenbytes.kickermost.io.rs;
+package de.frozenbytes.kickermost.io.src;
 
 import static org.fest.assertions.Assertions.assertThat;
 
