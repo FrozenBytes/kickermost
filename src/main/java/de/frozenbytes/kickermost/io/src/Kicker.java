@@ -5,70 +5,82 @@ import de.frozenbytes.kickermost.dto.Story;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.property.*;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
+import de.frozenbytes.kickermost.exception.MatchNotStartedException;
 import de.frozenbytes.kickermost.exception.ReloadPollingSourceException;
 import de.frozenbytes.kickermost.exception.TickerNotInSourceException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Kicker implements PollingSource {
 
-    private static final String CSS_ROOT = "#tabSpielereignisse";
-    private static final String CSS_MATCH = CSS_ROOT + " tr.trTickerBegegnung";
+    private static final Logger logger = LoggerFactory.getLogger(Kicker.class);
 
-    private static final String CSS_SCOREBOARD = CSS_MATCH + " td.begErg > div.scoreboard";
-    private static final String CSS_TEAM_A_SCORE = CSS_SCOREBOARD + " div.boardH";
-    private static final String CSS_TEAM_B_SCORE = CSS_SCOREBOARD + " div.boardA";
+    private static final String CSS_ROOT = "div#ovMain";
+    private static final String CSS_MATCH = CSS_ROOT + " div#ovMatchHeader div#pageTitle table.liveTitle tr#SpielpaarungLiveTitleRow";
+    private static final String CSS_GAME_NOT_STARTED = CSS_ROOT + " tr#ctl00_PlaceHolderContent_spielereignisse_contentContainer_NoDataEreignisse > td.nodata";
 
-    private static final String CSS_TEAM_A_NAME = CSS_MATCH + " td.first > a";
-    private static final String CSS_TEAM_B_NAME = CSS_MATCH + " td.last > a";
+    private static final String CSS_SCOREBOARD = CSS_MATCH + " td.lttabst div.scoreboard div.ergBoardExtT";
+    private static final String CSS_TEAM_A_SCORE = CSS_SCOREBOARD + " div#ovBoardExtMainH";
+    private static final String CSS_TEAM_B_SCORE = CSS_SCOREBOARD + " div#ovBoardExtMainA";
 
-    private static final String CSS_STORY = CSS_ROOT + " tr:not(.trTickerBegegnung,.livecom,.height0,.tr_sep)";
-    private static final String CSS_STORY_SUB_TIME = "div.tickerZeit";
-    private static final String CSS_STORY_SUB_GAME_MINUTE = "div.tickerMin";
-    private static final String CSS_STORY_SUB_TITLE = "div.tickerItemHeader";
-    private static final String CSS_STORY_SUB_DESCRIPTION = "div.ltereigkurz > p";
-    private static final String CSS_STORY_SUB_ICON = "div.tickerIcon";
+    private static final String CSS_TEAM_A_NAME = CSS_MATCH + " td.lttabvrnName > h1 > a";
+    private static final String CSS_TEAM_B_NAME = CSS_MATCH + " td.lttabvrnName+td+td > h1 > a";
+
+    private static final String CSS_STORY = CSS_ROOT + " div#ovContent div#spielereignisse_maincont table#tabSpielereignisse tr:not(.trTickerBegegnung,.livecom,.height0,.tr_sep)";
+    private static final String CSS_STORY_SUB_TIME = "div.lttdspzeit > div.ltspst";
+    private static final String CSS_STORY_SUB_GAME_MINUTE = "div.lttdspzeit > div.ltereig > b";
+    private static final String CSS_STORY_SUB_TEXT = "div.ltereigtxt";
+    private static final String CSS_STORY_SUB_ICON = "div.lttdspst div.ltereig";
 
     private final TickerUrl tickerUrl;
     private Document document;
 
 
-    public Kicker(final TickerUrl tickerUrl) throws ReloadPollingSourceException, TickerNotInSourceException {
+    public Kicker(final TickerUrl tickerUrl) {
         super();
         Preconditions.checkNotNull(tickerUrl, "tickerUrl should not be null!");
         this.tickerUrl = tickerUrl;
-        reload();
     }
 
     @Override
     public TeamScore getTeamAScore(){
+        checkDocument();
         return TeamScore.create(Integer.parseInt(getFirstText(document, CSS_TEAM_A_SCORE)));
     }
 
     @Override
     public TeamScore getTeamBScore(){
+        checkDocument();
         return TeamScore.create(Integer.parseInt(getFirstText(document, CSS_TEAM_B_SCORE)));
     }
 
     @Override
     public TeamName getTeamAName(){
+        checkDocument();
         return TeamName.create(getFirstText(document, CSS_TEAM_A_NAME));
     }
 
     @Override
     public TeamName getTeamBName(){
+        checkDocument();
         return TeamName.create(getFirstText(document, CSS_TEAM_B_NAME));
     }
 
     @Override
     public Story getStory(){
+        checkDocument();
+
         final Story story = new Story();
 
         final Elements elements = document.select(CSS_STORY);
@@ -88,13 +100,12 @@ public class Kicker implements PollingSource {
             final Element gameMinuteElement = e.selectFirst(CSS_STORY_SUB_GAME_MINUTE);
             final GameMinute gameMinute = gameMinuteElement == null ? null : parseGameMinute(gameMinuteElement);
 
+            final Element storyTextElement = e.selectFirst(CSS_STORY_SUB_TEXT);
             //StoryTitle
-            final Element storyTitleElement = e.selectFirst(CSS_STORY_SUB_TITLE);
-            final StoryTitle storyTitle = storyTitleElement == null ? null : parseStoryTitle(storyTitleElement);
+            final StoryTitle storyTitle = storyTextElement == null ? null : parseStoryTitle(storyTextElement);
 
             //StoryDescription
-            final Element storyDescriptionElement = e.selectFirst(CSS_STORY_SUB_DESCRIPTION);
-            final StoryDescription storyDescription = storyDescriptionElement == null ? null : parseStoryDescription(storyDescriptionElement);
+            final StoryDescription storyDescription = storyTextElement == null ? null : parseStoryDescription(storyTextElement);
 
             //StoryEvent
             final Element tickerIconElement = e.selectFirst(CSS_STORY_SUB_ICON);
@@ -107,11 +118,14 @@ public class Kicker implements PollingSource {
     }
 
     @Override
-    public void reload() throws ReloadPollingSourceException, TickerNotInSourceException {
+    public void reload() throws ReloadPollingSourceException, TickerNotInSourceException, MatchNotStartedException {
         try {
             document = Jsoup.connect(tickerUrl.getValue()).get();
             if(document.selectFirst(CSS_ROOT) == null){
                 throw new TickerNotInSourceException(tickerUrl);
+            }
+            if(document.selectFirst(CSS_GAME_NOT_STARTED) != null){
+                throw new MatchNotStartedException(tickerUrl);
             }
         } catch (IOException e) {
             throw new ReloadPollingSourceException(tickerUrl, e);
@@ -123,7 +137,7 @@ public class Kicker implements PollingSource {
     }
 
     private LocalTime parseLocalTime(final Element timeElement){
-        final String hourMinute = timeElement.text();
+        final String hourMinute = timeElement.text().replace(" Uhr", "");
         return LocalTime.parse(hourMinute + ":00", DateTimeFormatter.ISO_LOCAL_TIME);
     }
 
@@ -132,11 +146,32 @@ public class Kicker implements PollingSource {
     }
 
     private StoryTitle parseStoryTitle(final Element storyTitleElement){
-        return StoryTitle.create(storyTitleElement.text());
+        return StoryTitle.create(parseTextBlock(storyTitleElement, true));
     }
 
     private StoryDescription parseStoryDescription(final Element storyDescriptionElement){
-        return StoryDescription.create(storyDescriptionElement.text());
+        return StoryDescription.create(parseTextBlock(storyDescriptionElement, false));
+    }
+
+    private String parseTextBlock(Element element, boolean title){
+        final String html = element.html();
+        if(html == null){
+            return null;
+        }
+        final String[] parts = html.split("<br>");
+        if(title){
+            return reparseHtmlAndRecieveText(parts[0]);
+        }else{
+            final String descriptionPart = Stream.of(parts).skip(1).collect(Collectors.joining("<br>"));
+            return reparseHtmlAndRecieveText(descriptionPart);
+        }
+    }
+
+    private String reparseHtmlAndRecieveText(String html){
+        if(html == null || html.trim().isEmpty()){
+            return null;
+        }
+        return Jsoup.parse(html).text();
     }
 
     private StoryEvent parseStoryEvent(final Element tickerIconElement){
@@ -148,26 +183,32 @@ public class Kicker implements PollingSource {
             switch (imageFileName){
                 case "":
                     return StoryEvent.DEFAULT;
-                case "ergtyp_1-l_v2.png":
+                case "ergtyp_1-m.png":
                     return StoryEvent.GOAL;
-                case "eig-tor-l_v2.png":
+                case "eig-tor-m.png":
                     return StoryEvent.GOAL_OWN;
-                case "ergtyp_2-l_v2.png":
+                case "ergtyp_2-m.png":
                     return StoryEvent.YELLOW_CARD;
-                case "ergtyp_3-l_v2.png":
+                case "ergtyp_3-m.png":
                     return StoryEvent.YELLOW_RED_CARD;
-                case "ergtyp_4-l_v2.png":
+                case "ergtyp_4-m.png":
                     return StoryEvent.RED_CARD;
-                case "ergtyp_5-l_v2.png":
+                case "ergtyp_5-m.png":
                     return StoryEvent.EXCHANGE;
-                case "ergtyp_30-l_v2.png":
+                case "ergtyp_30-m.png":
                     return StoryEvent.PENALTY;
-                case "ergtyp_7-l_v2.png":
+                case "ergtyp_7-m.png":
                     return StoryEvent.PENALTY_FAILURE;
                 default:
-                    throw new IllegalStateException(String.format("Unexpected imageFileName: %s", imageFileName));
+                    logger.warn(String.format("Unexpected imageFileName: %s", imageFileName));
+                    return StoryEvent.DEFAULT;
+                    //throw new IllegalStateException(String.format("Unexpected imageFileName: %s", imageFileName));
             }
         }
+    }
+
+    private void checkDocument(){
+        Preconditions.checkNotNull(document, "document is null. Use reload() first to initialize it!");
     }
 
 }

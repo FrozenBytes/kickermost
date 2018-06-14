@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import de.frozenbytes.kickermost.concurrent.exchange.ExchangeStorage;
 import de.frozenbytes.kickermost.dto.*;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
+import de.frozenbytes.kickermost.exception.MatchNotStartedException;
 import de.frozenbytes.kickermost.exception.ReloadPollingSourceException;
 import de.frozenbytes.kickermost.exception.TickerNotInSourceException;
 import de.frozenbytes.kickermost.exception.UnexpectedThreadException;
@@ -50,49 +51,47 @@ public final class PollingThread {
 
     private void execute() {
         try {
-            //first run
+            //initialize
             if(sourceMap.isEmpty()){
-                logger.info(String.format("# First run - found %d URLs in RSS feed '%s'.", tickerUrlList.size(), RSS_URL));
+                logger.info(String.format("# Initializing - found %d URLs in RSS feed '%s'.", tickerUrlList.size(), RSS_URL));
                 for(TickerUrl url : tickerUrlList){
-                    waitForTicker(url);
-                    try {
-                        sourceMap.put(url, PollingSourceFactory.create(url));
-                    }catch (TickerNotInSourceException | ReloadPollingSourceException e){
-                        logger.info(e.getMessage());
-                    }
+                    logger.info(url.getValue());
+                    sourceMap.put(url, PollingSourceFactory.create(url));
                 }
             }
             Preconditions.checkState(!sourceMap.isEmpty(), "SourceMap is empty. No document could be parsed during the first run!");
 
             //interval run
-            waitForGlobal();
+            while(true){
+                waitForGlobal();
 
-            for(TickerUrl tickerUrl : sourceMap.keySet()){
-                waitForTicker(tickerUrl);
+                for(TickerUrl tickerUrl : sourceMap.keySet()){
+                    waitForTicker(tickerUrl);
 
-                final PollingSource source = sourceMap.get(tickerUrl);
-                try{
-                    source.reload();
+                    final PollingSource source = sourceMap.get(tickerUrl);
+                    try{
+                        source.reload();
 
-                    final ExchangeStorage storage = ExchangeStorage.getInstance();
+                        final ExchangeStorage storage = ExchangeStorage.getInstance();
 
-                    Ticker ticker;
-                    if(storage.containsTickerWithUrl(tickerUrl)){
-                        ticker = storage.getTickerByUrl(tickerUrl);
-                    }else{
-                        ticker = new Ticker(tickerUrl, createMatchFromSource(source));
-                        storage.addTicker(ticker);
-                    }
-
-                    final Story prevStory = ticker.getMatch().getStory();
-                    final Story currentStory = source.getStory();
-                    for(StoryPart currentStoryPart : currentStory){
-                        if(!prevStory.contains(currentStoryPart)){
-                            prevStory.add(currentStoryPart); //update the previous story with the new content
+                        Ticker ticker;
+                        if(storage.containsTickerWithUrl(tickerUrl)){
+                            ticker = storage.getTickerByUrl(tickerUrl);
+                        }else{
+                            ticker = new Ticker(tickerUrl, createMatchFromSource(source));
+                            storage.addTicker(ticker);
                         }
+
+                        final Story prevStory = ticker.getMatch().getStory();
+                        final Story currentStory = source.getStory();
+                        for(StoryPart currentStoryPart : currentStory){
+                            if(!prevStory.contains(currentStoryPart)){
+                                prevStory.add(currentStoryPart); //update the previous story with the new content
+                            }
+                        }
+                    }catch (TickerNotInSourceException | ReloadPollingSourceException | MatchNotStartedException e){
+                        logger.info(e.getMessage());
                     }
-                }catch (TickerNotInSourceException | ReloadPollingSourceException e){
-                    logger.info(e.getMessage());
                 }
             }
         } catch (InterruptedException e) {
@@ -106,7 +105,7 @@ public final class PollingThread {
     }
 
     private long getTickerInterval(){
-        return new Random().nextInt(501) + 50; //500-1000ms;
+        return new Random().nextInt(501) + 500; //500-1000ms;
     }
 
     private Match createMatchFromSource(final PollingSource source){
@@ -117,14 +116,14 @@ public final class PollingThread {
 
     private void waitForGlobal() throws InterruptedException {
         final long globalInterval = getGlobalInterval();
+        logger.info(String.format("# Global interval run [wait %d ms]", globalInterval));
         Thread.sleep(globalInterval);
-        logger.info(String.format("# Global interval run [%d ms]", globalInterval));
     }
 
     private void waitForTicker(final TickerUrl tickerUrl) throws InterruptedException {
         final long tickerInterval = getTickerInterval();
+        logger.info(String.format("# Ticker interval run [wait %d ms]: '%s'", tickerInterval, tickerUrl));
         Thread.sleep(tickerInterval);
-        logger.info(String.format("# Ticker interval run [%d ms]: '%s'", tickerInterval, tickerUrl));
     }
 
 }

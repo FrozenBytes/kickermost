@@ -10,6 +10,7 @@ import de.frozenbytes.kickermost.dto.property.TeamName;
 import de.frozenbytes.kickermost.dto.property.TeamScore;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
+import de.frozenbytes.kickermost.exception.MatchNotStartedException;
 import de.frozenbytes.kickermost.http.MattermostWebhookClient;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -21,12 +22,15 @@ public class KickerTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         kicker = new Kicker(TickerUrl.create(URL));
+        kicker.reload();
     }
 
-    private static final String URL = "http://www.kicker.de/news/fussball/nationalelf/startseite/fussball-nationalteams-freundschaftsspiele/2018/4/4204625/livematch_deutschland_saudi-arabien.html";
-    private static final TeamScore TEAM_A_SCORE = TeamScore.create(2);
-    private static final TeamScore TEAM_B_SCORE = TeamScore.create(1);
-    private static final TeamName TEAM_A_NAME = TeamName.create("Deutschland");
+    private static final String URL = "http://www.kicker.de/news/fussball/weltmeisterschaft/spiele/weltmeisterschaft/2018/1/3070406/spielverlauf_russland_saudi-arabien.html#omrss";
+    private static final String URL_MATCH_NOT_STARTED = "http://www.kicker.de/news/fussball/weltmeisterschaft/spiele/weltmeisterschaft/2018/1/3070431/spielverlauf_costa-rica_serbien-9954.html#omrss";
+
+    private static final TeamScore TEAM_A_SCORE = TeamScore.create(5);
+    private static final TeamScore TEAM_B_SCORE = TeamScore.create(0);
+    private static final TeamName TEAM_A_NAME = TeamName.create("Russland");
     private static final TeamName TEAM_B_NAME = TeamName.create("Saudi-Arabien");
 
     private static Kicker kicker;
@@ -56,9 +60,14 @@ public class KickerTest {
     public void getStory() {
         final Story story = kicker.getStory();
 
-        story.forEach(p -> System.out.println(p));
+        story.forEach(p -> System.out.println(p.getEvent().toString() + " " + p));
 
         assertThat(story).isNotNull().isNotEmpty().hasSize(117);
+    }
+
+    @Test(expected = MatchNotStartedException.class)
+    public void testMatchNotStarted() throws Exception {
+        new Kicker(TickerUrl.create(URL_MATCH_NOT_STARTED)).reload();
     }
 
     /*

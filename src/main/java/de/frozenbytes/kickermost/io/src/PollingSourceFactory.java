@@ -2,8 +2,6 @@ package de.frozenbytes.kickermost.io.src;
 
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.property.basic.Property;
-import de.frozenbytes.kickermost.exception.ReloadPollingSourceException;
-import de.frozenbytes.kickermost.exception.TickerNotInSourceException;
 import de.frozenbytes.kickermost.io.src.rss.RssParser;
 
 import java.io.IOException;
@@ -12,7 +10,7 @@ import java.util.stream.Collectors;
 
 public final class PollingSourceFactory {
 
-    public static PollingSource create(TickerUrl url) throws ReloadPollingSourceException, TickerNotInSourceException {
+    public static PollingSource create(TickerUrl url) {
         return new Kicker(url);
     }
 
