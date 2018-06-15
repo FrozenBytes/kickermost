@@ -199,6 +199,10 @@ public class Kicker implements PollingSource {
                     return StoryEvent.PENALTY;
                 case "ergtyp_7-m.png":
                     return StoryEvent.PENALTY_FAILURE;
+                case "anstoss-m.png":
+                    return StoryEvent.KICKOFF;
+                case "abpfiff-m.png":
+                    return StoryEvent.FINAL_WHISTLE;
                 default:
                     logger.warn(String.format("Unexpected imageFileName: %s", imageFileName));
                     return StoryEvent.DEFAULT;

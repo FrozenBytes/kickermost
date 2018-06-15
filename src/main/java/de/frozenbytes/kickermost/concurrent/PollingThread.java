@@ -121,7 +121,7 @@ public final class PollingThread {
 
     private void waitForTicker(final TickerUrl tickerUrl) throws InterruptedException {
         final long tickerInterval = getTickerInterval();
-        logger.info(String.format("# Ticker interval run [wait %d ms]: '%s'", tickerInterval, tickerUrl));
+        logger.info(String.format("## Ticker interval run [wait %d ms]: '%s'", tickerInterval, tickerUrl));
         Thread.sleep(tickerInterval);
     }
 

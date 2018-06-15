@@ -10,6 +10,8 @@ public enum StoryEvent {
     YELLOW_RED_CARD(":ledger::closed_book:"),
     PENALTY(":goal_net:"),
     PENALTY_FAILURE(":goal_net:"),
+    KICKOFF(":arrow_forward:"),
+    FINAL_WHISTLE(":pause_button:"),
     DEFAULT("")
     ;
 
