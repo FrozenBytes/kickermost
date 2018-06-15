@@ -81,7 +81,7 @@ public final class PropertiesHolder {
     }
 
     private void validatePropertiesKey(final Properties properties, final String key){
-        Preconditions.checkState(properties.contains(key), String.format("Expected the properties file to contain the key '%s'!", key));
+        Preconditions.checkState(properties.containsKey(key), String.format("Expected the properties file to contain the key '%s'!", key));
     }
 
     private void validatePropertiesStringValue(final Properties properties, final String key){

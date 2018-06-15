@@ -1,7 +1,7 @@
 package de.frozenbytes.kickermost.io.src;
 
-import static org.fest.assertions.Assertions.assertThat;
-
+import de.frozenbytes.kickermost.PropertiesLoader;
+import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.Story;
 import de.frozenbytes.kickermost.dto.StoryPart;
@@ -16,11 +16,14 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 
 public class KickerTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
+        propertiesHolder = PropertiesLoader.createPropertiesHolder();
         kicker = new Kicker(TickerUrl.create(URL));
         kicker.reload();
     }
@@ -33,6 +36,7 @@ public class KickerTest {
     private static final TeamName TEAM_A_NAME = TeamName.create("Russland");
     private static final TeamName TEAM_B_NAME = TeamName.create("Saudi-Arabien");
 
+    private static PropertiesHolder propertiesHolder;
     private static Kicker kicker;
 
 
@@ -81,7 +85,7 @@ public class KickerTest {
     public void postGoalTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
-        MattermostWebhookClient client = new MattermostWebhookClient();
+        MattermostWebhookClient client = new MattermostWebhookClient(propertiesHolder);
         for(StoryPart storyPart : match.getStory()) {
             if(storyPart.getEvent() == StoryEvent.GOAL) {
                 client.postMessage(match, storyPart);
@@ -95,7 +99,7 @@ public class KickerTest {
     public void postOwnGoalTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
-        MattermostWebhookClient client = new MattermostWebhookClient();
+        MattermostWebhookClient client = new MattermostWebhookClient(propertiesHolder);
         for(StoryPart storyPart : match.getStory()) {
             if(storyPart.getEvent() == StoryEvent.GOAL_OWN) {
                 client.postMessage(match, storyPart);
@@ -109,7 +113,7 @@ public class KickerTest {
     public void postExchangeTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
-        MattermostWebhookClient client = new MattermostWebhookClient();
+        MattermostWebhookClient client = new MattermostWebhookClient(propertiesHolder);
         for(StoryPart storyPart : match.getStory()) {
             if(storyPart.getEvent() == StoryEvent.EXCHANGE) {
                 client.postMessage(match, storyPart);
@@ -123,7 +127,7 @@ public class KickerTest {
     public void postYellowCardTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
-        MattermostWebhookClient client = new MattermostWebhookClient();
+        MattermostWebhookClient client = new MattermostWebhookClient(propertiesHolder);
         for(StoryPart storyPart : match.getStory()) {
             if(storyPart.getEvent() == StoryEvent.YELLOW_CARD) {
                 client.postMessage(match, storyPart);
@@ -137,7 +141,7 @@ public class KickerTest {
     public void postRedCardTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
-        MattermostWebhookClient client = new MattermostWebhookClient();
+        MattermostWebhookClient client = new MattermostWebhookClient(propertiesHolder);
         for(StoryPart storyPart : match.getStory()) {
             if(storyPart.getEvent() == StoryEvent.RED_CARD) {
                 client.postMessage(match, storyPart);
@@ -151,7 +155,7 @@ public class KickerTest {
     public void postYellowRedCardTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
-        MattermostWebhookClient client = new MattermostWebhookClient();
+        MattermostWebhookClient client = new MattermostWebhookClient(propertiesHolder);
         for(StoryPart storyPart : match.getStory()) {
             if(storyPart.getEvent() == StoryEvent.YELLOW_RED_CARD) {
                 client.postMessage(match, storyPart);
@@ -165,7 +169,7 @@ public class KickerTest {
     public void postPenaltyTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
-        MattermostWebhookClient client = new MattermostWebhookClient();
+        MattermostWebhookClient client = new MattermostWebhookClient(propertiesHolder);
         for(StoryPart storyPart : match.getStory()) {
             if(storyPart.getEvent() == StoryEvent.PENALTY) {
                 client.postMessage(match, storyPart);
@@ -179,7 +183,7 @@ public class KickerTest {
     public void postPenaltyFailureTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
-        MattermostWebhookClient client = new MattermostWebhookClient();
+        MattermostWebhookClient client = new MattermostWebhookClient(propertiesHolder);
         for(StoryPart storyPart : match.getStory()) {
             if(storyPart.getEvent() == StoryEvent.PENALTY_FAILURE) {
                 client.postMessage(match, storyPart);
@@ -193,7 +197,7 @@ public class KickerTest {
     public void postDefaultTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
-        MattermostWebhookClient client = new MattermostWebhookClient();
+        MattermostWebhookClient client = new MattermostWebhookClient(propertiesHolder);
         for(StoryPart storyPart : match.getStory()) {
             if(storyPart.getEvent() == StoryEvent.DEFAULT) {
                 client.postMessage(match, storyPart);

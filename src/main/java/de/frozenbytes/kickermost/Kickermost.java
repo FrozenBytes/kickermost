@@ -1,6 +1,7 @@
 package de.frozenbytes.kickermost;
 
 import de.frozenbytes.kickermost.concurrent.PollingThread;
+import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,13 +14,13 @@ public class Kickermost {
     public static void main(String[] args) {
         logger.info("START");
         try{
+            final PropertiesHolder propertiesHolder = PropertiesLoader.createPropertiesHolder();
+
 //            MattermostWebhookClient client = new MattermostWebhookClient();
 //            client.postMessage();
 //            new Kicker().get();
 
-            //System.out.println(new File(".").getAbsolutePath());
-
-            final PollingThread pollingThread = new PollingThread();
+            final PollingThread pollingThread = new PollingThread(propertiesHolder);
             pollingThread.start();
 
             while (pollingThread.isAlive()){

@@ -25,6 +25,7 @@ public final class PollingSourceFactory {
     private static String applyKickerRssLinkHacks(String link){
         return link.replace("spielbericht", "spielverlauf")
                 .replace("spielvorschau", "spielverlauf")
+                .replace("spielanalyse", "spielverlauf")
                 .replace("spielinfo", "spielverlauf");
     }
 

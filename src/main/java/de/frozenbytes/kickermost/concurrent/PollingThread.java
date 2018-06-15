@@ -2,6 +2,7 @@ package de.frozenbytes.kickermost.concurrent;
 
 import com.google.common.base.Preconditions;
 import de.frozenbytes.kickermost.concurrent.exchange.ExchangeStorage;
+import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.*;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.exception.MatchNotStartedException;
@@ -23,22 +24,20 @@ public final class PollingThread {
 
     private static final Logger logger = LoggerFactory.getLogger(PollingThread.class);
 
-    public static final String RSS_URL = "http://rss.kicker.de/live/wm";
-
-    private static final int INTERVAL_MIN = 30000;
-    private static final int INTERVAL_MAX = 90000;
-
+    private final PropertiesHolder propertiesHolder;
     private final Thread thread;
     private final List<TickerUrl> tickerUrlList;
 
     private Map<TickerUrl, PollingSource> sourceMap = new HashMap<>();
 
 
-    public PollingThread() throws IOException {
+    public PollingThread(final PropertiesHolder propertiesHolder) throws IOException {
         super();
-        thread = new Thread(this::execute);
-        thread.setDaemon(true); // terminate this thread, if the superior user thread terminates
-        tickerUrlList = PollingSourceFactory.parseRssFeed(RSS_URL);
+        Preconditions.checkNotNull(propertiesHolder, "propertiesHolder should not be null!");
+        this.propertiesHolder = propertiesHolder;
+        this.thread = new Thread(this::execute);
+        this.thread.setDaemon(true); // terminate this thread, if the superior user thread terminates
+        this.tickerUrlList = PollingSourceFactory.parseRssFeed(propertiesHolder.getPollingRssFeedUrl());
     }
 
     public void start(){
@@ -53,7 +52,7 @@ public final class PollingThread {
         try {
             //initialize
             if(sourceMap.isEmpty()){
-                logger.info(String.format("# Initializing - found %d URLs in RSS feed '%s'.", tickerUrlList.size(), RSS_URL));
+                logger.info(String.format("# Initializing - found %d URLs in RSS feed '%s'.", tickerUrlList.size(), propertiesHolder.getPollingRssFeedUrl()));
                 for(TickerUrl url : tickerUrlList){
                     logger.info(url.getValue());
                     sourceMap.put(url, PollingSourceFactory.create(url));
@@ -101,11 +100,11 @@ public final class PollingThread {
     }
 
     private long getGlobalInterval(){
-        return new Random().nextInt(INTERVAL_MAX - INTERVAL_MIN) + INTERVAL_MIN;
+        return new Random().nextInt(propertiesHolder.getPollingGlobalIntervalMax() - propertiesHolder.getPollingGlobalIntervalMin()) + propertiesHolder.getPollingGlobalIntervalMin();
     }
 
     private long getTickerInterval(){
-        return new Random().nextInt(501) + 500; //500-1000ms;
+        return new Random().nextInt(propertiesHolder.getPollingTickerIntervalMax() - propertiesHolder.getPollingTickerIntervalMin()) + propertiesHolder.getPollingTickerIntervalMin();
     }
 
     private Match createMatchFromSource(final PollingSource source){
