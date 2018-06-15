@@ -1,29 +1,32 @@
 package de.frozenbytes.kickermost.http;
 
-import de.frozenbytes.kickermost.PropertiesLoader;
+import com.google.common.base.Preconditions;
+import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.StoryPart;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-
-import java.io.IOException;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
+
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Handles posting messages to mattermost via webhook integration
  */
 public class MattermostWebhookClient {
 
+    private PropertiesHolder propertiesHolder;
 
-    public MattermostWebhookClient() {
+    public MattermostWebhookClient(PropertiesHolder propertiesHolder) {
+        setPropertiesHolder(propertiesHolder);
     }
 
     public void postMessage(final Match match, final StoryPart messageParameters) {
@@ -32,11 +35,11 @@ public class MattermostWebhookClient {
 //                                            .setProxy(proxy)
 //                                            .build();
 
-        HttpPost request = new HttpPost(PropertiesLoader.loadProperties().getProperty(PropertiesLoader.WEBHOOK_URL));
+        HttpPost request = new HttpPost(propertiesHolder.getMattermostWebhookUrl());
 //        request.setConfig(config);
         request.addHeader("content-type", "application/json;charset=UTF-8");
 
-        StringEntity params = new StringEntity(MattermostMessageBuilder.createJsonMessage(match, messageParameters), "UTF-8");
+        StringEntity params = new StringEntity(MattermostMessageBuilder.createJsonMessage(match, messageParameters, propertiesHolder), "UTF-8");
         request.setEntity(params);
         try (CloseableHttpClient httpClient = createAcceptSelfSignedCertificateClient()){
             HttpResponse response = httpClient.execute(request);
@@ -44,6 +47,11 @@ public class MattermostWebhookClient {
         } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setPropertiesHolder(final PropertiesHolder propertiesHolder){
+        Preconditions.checkNotNull(propertiesHolder, "propertiesHolder should not be null!");
+        this.propertiesHolder = propertiesHolder;
     }
 
     private static CloseableHttpClient createAcceptSelfSignedCertificateClient()

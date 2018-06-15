@@ -78,7 +78,7 @@ public class KickerTest {
 
     @Test
     @Ignore
-    public void postGoalTest() {
+    public void postGoalTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
         MattermostWebhookClient client = new MattermostWebhookClient();
@@ -92,7 +92,7 @@ public class KickerTest {
 
     @Test
     @Ignore
-    public void postOwnGoalTest() {
+    public void postOwnGoalTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
         MattermostWebhookClient client = new MattermostWebhookClient();
@@ -106,7 +106,7 @@ public class KickerTest {
 
     @Test
     @Ignore
-    public void postExchangeTest() {
+    public void postExchangeTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
         MattermostWebhookClient client = new MattermostWebhookClient();
@@ -120,7 +120,7 @@ public class KickerTest {
 
     @Test
     @Ignore
-    public void postYellowCardTest() {
+    public void postYellowCardTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
         MattermostWebhookClient client = new MattermostWebhookClient();
@@ -134,7 +134,7 @@ public class KickerTest {
 
     @Test
     @Ignore
-    public void postRedCardTest() {
+    public void postRedCardTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
         MattermostWebhookClient client = new MattermostWebhookClient();
@@ -148,7 +148,7 @@ public class KickerTest {
 
     @Test
     @Ignore
-    public void postYellowRedCardTest() {
+    public void postYellowRedCardTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
         MattermostWebhookClient client = new MattermostWebhookClient();
@@ -162,7 +162,7 @@ public class KickerTest {
 
     @Test
     @Ignore
-    public void postPenaltyTest() {
+    public void postPenaltyTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
         MattermostWebhookClient client = new MattermostWebhookClient();
@@ -176,7 +176,7 @@ public class KickerTest {
 
     @Test
     @Ignore
-    public void postPenaltyFailureTest() {
+    public void postPenaltyFailureTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
         MattermostWebhookClient client = new MattermostWebhookClient();
@@ -190,7 +190,7 @@ public class KickerTest {
 
     @Test
     @Ignore
-    public void postDefaultTest() {
+    public void postDefaultTest() throws Exception {
         final Match match = new Match(new Team(TEAM_A_NAME, TEAM_A_SCORE), new Team(TEAM_B_NAME, TEAM_B_SCORE), kicker.getStory());
 
         MattermostWebhookClient client = new MattermostWebhookClient();

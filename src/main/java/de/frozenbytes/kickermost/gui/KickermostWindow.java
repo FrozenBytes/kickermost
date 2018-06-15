@@ -4,21 +4,26 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import de.frozenbytes.kickermost.PropertiesLoader;
+import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Team;
 import de.frozenbytes.kickermost.dto.property.*;
 import de.frozenbytes.kickermost.dto.type.Country;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
+import de.frozenbytes.kickermost.exception.UnableToParsePropertiesFileException;
+import de.frozenbytes.kickermost.exception.UnableToSavePropertiesFileException;
 import de.frozenbytes.kickermost.http.MattermostWebhookClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.awt.Dimension;
-import java.awt.Insets;
 import javax.swing.*;
+import java.awt.*;
 import java.time.LocalTime;
-import java.util.Properties;
 
 public class KickermostWindow {
+
+   private static final Logger logger = LoggerFactory.getLogger(KickermostWindow.class);
 
    private JComboBox<Country> cmbTeamA;
    private JSpinner spnTeamAScore;
@@ -50,8 +55,11 @@ public class KickermostWindow {
    private JSpinner spnGameTime;
 
    private final MattermostWebhookClient client;
+   private PropertiesHolder propertiesHolder;
 
-   public KickermostWindow() {
+   public KickermostWindow() throws UnableToParsePropertiesFileException {
+      this.propertiesHolder = PropertiesLoader.createPropertiesHolder();
+
       setupUI();
       JFrame frame = new JFrame("Kickermost");
       frame.setContentPane(this.pnlMain);
@@ -59,22 +67,25 @@ public class KickermostWindow {
       frame.pack();
       frame.setVisible(true);
 
-      client = new MattermostWebhookClient();
+      client = new MattermostWebhookClient(propertiesHolder);
       fillComboBoxes();
       fillPropertyFields();
       createListener();
    }
 
    public static void main(String[] args) {
-      new KickermostWindow();
+      try {
+         new KickermostWindow();
+      } catch (UnableToParsePropertiesFileException e) {
+         logger.error(e.getMessage(), e);
+      }
    }
 
    private void fillPropertyFields() {
-      Properties properties = PropertiesLoader.loadProperties();
-      txtWebhookUrl.setText(properties.get(PropertiesLoader.WEBHOOK_URL).toString());
-      txtBotIconUrl.setText(properties.get(PropertiesLoader.ICON_URL).toString());
-      txtBotName.setText(properties.get(PropertiesLoader.USERNAME).toString());
-      txtChannel.setText(properties.get(PropertiesLoader.CHANNEL).toString());
+      txtWebhookUrl.setText(propertiesHolder.getMattermostWebhookUrl());
+      txtBotIconUrl.setText(propertiesHolder.getMattermostIconUrl());
+      txtBotName.setText(propertiesHolder.getMattermostUsername());
+      txtChannel.setText(propertiesHolder.getMattermostChannelName());
    }
 
    private void fillComboBoxes() {
@@ -104,7 +115,15 @@ public class KickermostWindow {
       btnClose.addActionListener(e -> System.exit(0));
 
       btnSave.addActionListener(
-            e -> PropertiesLoader.saveProperties(txtBotName.getText(), txtChannel.getText(), txtBotIconUrl.getText(), txtWebhookUrl.getText()));
+            ev -> {
+               try {
+                  PropertiesLoader.saveProperties(txtBotName.getText(), txtChannel.getText(), txtBotIconUrl.getText(), txtWebhookUrl.getText());
+                  this.propertiesHolder = PropertiesLoader.createPropertiesHolder();
+                  this.client.setPropertiesHolder(propertiesHolder);
+               } catch (UnableToParsePropertiesFileException | UnableToSavePropertiesFileException e) {
+                  logger.error(e.getMessage(), e);
+               }
+            });
    }
 
    /**

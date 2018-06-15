@@ -1,13 +1,12 @@
 package de.frozenbytes.kickermost.http;
 
-import de.frozenbytes.kickermost.PropertiesLoader;
+import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.type.Country;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import java.util.Properties;
 
 public class MattermostMessageBuilder {
 
@@ -19,12 +18,11 @@ public class MattermostMessageBuilder {
     private static final String GOAL = "TOR!";
     private static final String OWN_GOAL = "EIGENTOR!";
 
-    public static String createJsonMessage(final Match match, final StoryPart messageParameters) {
+    public static String createJsonMessage(final Match match, final StoryPart messageParameters, final PropertiesHolder propertiesHolder) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        Properties properties = PropertiesLoader.loadProperties();
-        builder.add("username", properties.getProperty(PropertiesLoader.USERNAME));
-        builder.add("channel", properties.getProperty(PropertiesLoader.CHANNEL));
-        builder.add("icon_url", properties.getProperty(PropertiesLoader.ICON_URL));
+        builder.add("username", propertiesHolder.getMattermostUsername());
+        builder.add("channel", propertiesHolder.getMattermostChannelName());
+        builder.add("icon_url", propertiesHolder.getMattermostIconUrl());
         builder.add("text", buildMattermostMessage(match, messageParameters));
         return builder.build().toString();
     }
