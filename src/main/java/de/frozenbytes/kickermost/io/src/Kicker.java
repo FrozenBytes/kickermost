@@ -50,6 +50,15 @@ public class Kicker implements PollingSource {
     private static final String CSS_STORY_SUB_GAME_MINUTE = "div.tickerMin";
     private static final String CSS_STORY_SUB_TEXT = "div.ltereigtxt";
     private static final String CSS_STORY_SUB_ICON = "div.tickerIcon";
+    private static final String CSS_STORY_HALF_TIME = "div.tickerHalbzeitText";
+
+    private static final String HALF_TIME_START = "anpfiff";
+    private static final String HALF_TIME_END = "abpfiff";
+    private static final String HALF_TIME_A = "1.";
+    private static final String HALF_TIME_B = "2.";
+    private static final String OVERTIME = "verlängerung";
+    private static final String PENALTIES = "elfmeter";
+    private static final String GAME_END = "schlusspfiff";
 
     private final TickerUrl tickerUrl;
     private Document document;
@@ -127,7 +136,15 @@ public class Kicker implements PollingSource {
             //Time
             final Element timeElement = e.selectFirst(CSS_STORY_SUB_TIME);
             if(timeElement == null){
-                logger.info("Skipped html having no time");
+                //HalfTime row?
+                final Element halfTimeElement = e.selectFirst(CSS_STORY_HALF_TIME);
+                if(halfTimeElement != null){
+                    final String halfTimeText = halfTimeElement.text();
+                    logger.info("Found html row having half time: " + halfTimeText);
+                    story.add(parseHalfTimeStoryPart(halfTimeText));
+                }
+
+                logger.info("Skipped html row having no time");
                 continue; //skip this unparseable row..
             }
             Preconditions.checkNotNull(timeElement, "timeElement should not be null!");
@@ -149,7 +166,7 @@ public class Kicker implements PollingSource {
             final Element tickerIconElement = e.selectFirst(CSS_STORY_SUB_ICON);
             final StoryEvent storyEvent = parseStoryEvent(tickerIconElement);
 
-            story.add(new StoryPart(time, gameMinute, storyEvent, storyTitle, storyDescription));
+            story.add(new StoryPart(LocalTime.now(), time, gameMinute, storyEvent, storyTitle, storyDescription));
         }
 
         return story;
@@ -245,10 +262,6 @@ public class Kicker implements PollingSource {
                 case "ergtyp_7-m.png":
                 case "ergtyp_7-l_v2.png":
                     return StoryEvent.PENALTY_FAILURE;
-                case "anstoss-m.png":
-                    return StoryEvent.KICKOFF;
-                case "abpfiff-m.png":
-                    return StoryEvent.FINAL_WHISTLE;
                 case "ergtyp_70-m.png":
                 case "ergtyp_71-m.png":
                     return StoryEvent.VIDEO_PROOF;
@@ -258,6 +271,70 @@ public class Kicker implements PollingSource {
                     //throw new IllegalStateException(String.format("Unexpected imageFileName: %s", imageFileName));
             }
         }
+    }
+
+    private StoryPart parseHalfTimeStoryPart(final String halfTimeText){
+        final String lowerHalfTimeText = halfTimeText.toLowerCase();
+        //game end
+        if(containsAllStrings(lowerHalfTimeText, GAME_END)){
+            return createHalfTimeStoryPart(StoryEvent.GAME_END, halfTimeText);
+        }
+        //penalties
+        if(containsAllStrings(lowerHalfTimeText, PENALTIES)){
+            return createHalfTimeStoryPart(StoryEvent.PENALTIES_TIME, halfTimeText);
+        }
+
+        //overtime b end
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_END, HALF_TIME_B, OVERTIME)){
+            return createHalfTimeStoryPart(StoryEvent.OVERTIME_B_END, halfTimeText);
+        }
+        //overtime b start
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_START, HALF_TIME_B, OVERTIME)){
+            return createHalfTimeStoryPart(StoryEvent.OVERTIME_B_START, halfTimeText);
+        }
+        //overtime a end
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_END, HALF_TIME_A, OVERTIME)){
+            return createHalfTimeStoryPart(StoryEvent.OVERTIME_A_END, halfTimeText);
+        }
+        //overtime a start
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_START, HALF_TIME_A, OVERTIME)){
+            return createHalfTimeStoryPart(StoryEvent.OVERTIME_A_START, halfTimeText);
+        }
+
+        //halftime b end
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_END, HALF_TIME_B)){
+            return createHalfTimeStoryPart(StoryEvent.HALF_TIME_B_END, halfTimeText);
+        }
+        //halftime b start
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_START, HALF_TIME_B)){
+            return createHalfTimeStoryPart(StoryEvent.HALF_TIME_B_START, halfTimeText);
+        }
+        //halftime a end
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_END, HALF_TIME_A)){
+            return createHalfTimeStoryPart(StoryEvent.HALF_TIME_A_END, halfTimeText);
+        }
+        //halftime a start
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_START, HALF_TIME_A)){
+            return createHalfTimeStoryPart(StoryEvent.HALF_TIME_A_START, halfTimeText);
+        }
+
+        throw new IllegalStateException(String.format("Unable to parse lowerHalfTimeText: '%s'!", lowerHalfTimeText));
+    }
+
+    private StoryPart createHalfTimeStoryPart(final StoryEvent storyEvent, final String halfTimeText){
+        return new StoryPart(LocalTime.now(), null, null, storyEvent, StoryTitle.create(halfTimeText), null);
+    }
+
+    private boolean containsAllStrings(final String text, final String... containsTexts){
+        Preconditions.checkNotNull(text, "text should not be null!");
+        Preconditions.checkNotNull(containsTexts, "containsTexts should not be null!");
+        Preconditions.checkArgument(containsTexts.length > 0, "containsTexts should not be empty!");
+        for(String containsText : containsTexts){
+            if(!text.contains(containsText)){
+                return false;
+            }
+        }
+        return true;
     }
 
     private void checkDocument(){

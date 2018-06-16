@@ -62,8 +62,8 @@ public class Kickermost {
         return storage.getTickerList().stream()
                                       .filter(ticker -> ticker.getMatch().getStory().stream()
                                                                                     .anyMatch(storyPart ->
-                                                                                            storyPart.getTime().isAfter(LocalTime.now()) ||
-                                                                                            storyPart.getTime().isAfter(LocalTime.now().minusMinutes(15))))
+                                                                                            storyPart.getSystemTime().isAfter(LocalTime.now()) ||
+                                                                                            storyPart.getSystemTime().isAfter(LocalTime.now().minusMinutes(15))))
                                       .collect(Collectors.toList());
     }
 

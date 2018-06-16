@@ -44,10 +44,17 @@ public class MattermostMessageBuilder {
             case PENALTY:
             case PENALTY_FAILURE:
                 return buildPenaltyMessage(match, messageParameters);
-            case KICKOFF:
-                return buildStartingFinalWhistleMessage(match, messageParameters, KICKOFF);
-            case FINAL_WHISTLE:
-                return buildStartingFinalWhistleMessage(match, messageParameters, FINAL_WHISTLE);
+            case VIDEO_PROOF:
+            case HALF_TIME_A_START:
+            case HALF_TIME_A_END:
+            case HALF_TIME_B_START:
+            case HALF_TIME_B_END:
+            case OVERTIME_A_START:
+            case OVERTIME_A_END:
+            case OVERTIME_B_START:
+            case OVERTIME_B_END:
+            case PENALTIES_TIME:
+            case GAME_END:
             case DEFAULT:
                 return buildGenericMessage(messageParameters);
             default:

@@ -64,7 +64,7 @@ public class KickerTest {
     public void getStory() {
         final Story story = kicker.getStory();
 
-        story.forEach(p -> System.out.println(p.getEvent().toString() + " " + p));
+        story.forEach(System.out::println);
 
         assertThat(story).isNotNull().isNotEmpty().hasSize(117);
     }

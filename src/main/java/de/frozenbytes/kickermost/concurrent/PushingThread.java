@@ -99,7 +99,7 @@ public class PushingThread extends Thread {
             }
 
             //Game Over - terminate thread
-            if(sendMessages.stream().anyMatch(storyPart -> storyPart.getEvent() == StoryEvent.FINAL_WHISTLE)){
+            if(sendMessages.stream().anyMatch(storyPart -> storyPart.getEvent() == StoryEvent.GAME_END)){
                 break;
             }
         }

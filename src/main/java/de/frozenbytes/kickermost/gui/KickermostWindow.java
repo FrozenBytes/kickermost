@@ -103,7 +103,7 @@ public class KickermostWindow {
          Team teamB = new Team(TeamName.create(((Country) cmbTeamB.getSelectedItem()).getName()), TeamScore.create((Integer) spnTeamBScore.getValue()));
          Match match = new Match(teamA, teamB, null);
 
-         StoryPart messageParameters = new StoryPart(LocalTime.now(), GameMinute.create(spnGameTime.getValue().toString() + "."), (StoryEvent) cmbType.getSelectedItem(), StoryTitle.create(txaTitleMessage.getText()),
+         StoryPart messageParameters = new StoryPart(LocalTime.now(), LocalTime.now(), GameMinute.create(spnGameTime.getValue().toString() + "."), (StoryEvent) cmbType.getSelectedItem(), StoryTitle.create(txaTitleMessage.getText()),
                StoryDescription.create(txaMessage.getText()));
 
          ConfirmSendMessageDialog dlg = new ConfirmSendMessageDialog();

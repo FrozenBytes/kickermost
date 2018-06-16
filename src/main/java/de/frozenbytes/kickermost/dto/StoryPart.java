@@ -11,6 +11,7 @@ import java.util.Objects;
 
 public final class StoryPart implements Serializable {
 
+    private final LocalTime systemTime;
     private final LocalTime time;
     private final GameMinute gameMinute;
     private final StoryEvent event;
@@ -18,16 +19,22 @@ public final class StoryPart implements Serializable {
     private final StoryDescription description;
 
 
-    public StoryPart(final LocalTime time,
+    public StoryPart(final LocalTime systemTime,
+                     final LocalTime time,
                      final GameMinute gameMinute,
                      final StoryEvent event,
                      final StoryTitle title,
                      final StoryDescription description) {
+        this.systemTime = systemTime;
         this.time = time;
         this.gameMinute = gameMinute;
         this.event = event;
         this.title = title;
         this.description = description;
+    }
+
+    public LocalTime getSystemTime() {
+        return systemTime;
     }
 
     public LocalTime getTime() {
@@ -52,8 +59,10 @@ public final class StoryPart implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s%s - %s",
-                time.toString(),
+        return String.format("[%s] %s %s%s - %s",
+                systemTime.toString(),
+                event.name(),
+                time == null ? "" : time.toString(),
                 gameMinute == null ? "" : "|" + gameMinute.getValue(),
                 (title == null ? "" : title.getValue()) + " " + (description == null ? "" : description.getValue())
         );
@@ -70,7 +79,6 @@ public final class StoryPart implements Serializable {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(time, event);
     }
 }

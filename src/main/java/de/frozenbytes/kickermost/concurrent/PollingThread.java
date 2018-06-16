@@ -71,8 +71,10 @@ public final class PollingThread {
                         logger.info(url.getValue());
                         rssSourceMap.put(url, PollingSourceFactory.create(url));
                     }
+                    if(rssSourceMap.isEmpty()){
+                        logger.warn("RssSourceMap is empty. No document could be parsed during the first run!");
+                    }
                 }
-                Preconditions.checkState(!rssSourceMap.isEmpty(), "SourceMap is empty. No document could be parsed during the first run!");
 
                 //interval run
                 waitForGlobal();

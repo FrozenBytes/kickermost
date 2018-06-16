@@ -1,5 +1,7 @@
 package de.frozenbytes.kickermost.dto.type;
 
+import java.util.stream.Stream;
+
 public enum StoryEvent {
 
     GOAL(":soccer:"),
@@ -10,12 +12,21 @@ public enum StoryEvent {
     YELLOW_RED_CARD(":ledger::closed_book:"),
     PENALTY(":goal_net:"),
     PENALTY_FAILURE(":goal_net:"),
-    KICKOFF(":arrow_forward:"),
-    FINAL_WHISTLE(":pause_button:"),
     VIDEO_PROOF(":movie_camera:"),
+
+    HALF_TIME_A_START(":arrow_forward:"),
+    HALF_TIME_A_END(":pause_button:"),
+    HALF_TIME_B_START(":arrow_forward:"),
+    HALF_TIME_B_END(":pause_button:"),
+    OVERTIME_A_START(":arrow_forward:"),
+    OVERTIME_A_END(":pause_button:"),
+    OVERTIME_B_START(":arrow_forward:"),
+    OVERTIME_B_END(":pause_button:"),
+    PENALTIES_TIME(":goal_net:"),
+    GAME_END(":pause_button:"),
+
     DEFAULT("")
     ;
-    private static final StoryEvent[] ALLOWED_STORY_EVENTS = {GOAL, GOAL_OWN, YELLOW_CARD, YELLOW_RED_CARD, RED_CARD, PENALTY, PENALTY_FAILURE, KICKOFF, FINAL_WHISTLE, VIDEO_PROOF, EXCHANGE};
 
     final String mattermostCode;
 
@@ -28,6 +39,8 @@ public enum StoryEvent {
     }
 
     public static StoryEvent[] getAllowedEvents(){
-        return ALLOWED_STORY_EVENTS;
+        return Stream.of(StoryEvent.values())
+                .filter(ev -> ev != StoryEvent.DEFAULT)
+                .toArray(StoryEvent[]::new);
     }
 }
