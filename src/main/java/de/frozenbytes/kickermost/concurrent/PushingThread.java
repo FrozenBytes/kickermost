@@ -38,7 +38,7 @@ public class PushingThread extends Thread {
     public void run() {
         while (true){
             try {
-                wait(500);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
                 break;
@@ -51,7 +51,7 @@ public class PushingThread extends Thread {
             List<StoryPart> sendMessages;
 
             // Read send messages
-            try(FileInputStream fis = new FileInputStream(tickerUrl.toString() + ".tmp")) {//
+            try(FileInputStream fis = new FileInputStream(convertTickerUrlToFileName(tickerUrl) + ".tmp")) {//
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 sendMessages = (List<StoryPart>) ois.readObject();
             } catch (IOException | ClassNotFoundException e) {
@@ -73,7 +73,7 @@ public class PushingThread extends Thread {
             }
 
             // Save send Messages
-            try(FileOutputStream fos = new FileOutputStream(tickerUrl.toString() + ".tmp")) {
+            try(FileOutputStream fos = new FileOutputStream(convertTickerUrlToFileName(tickerUrl) + ".tmp")) {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(sendMessages);
             } catch (IOException e) {
@@ -86,5 +86,11 @@ public class PushingThread extends Thread {
                 break;
             }
         }
+    }
+
+    private String convertTickerUrlToFileName(TickerUrl tickerUrl){
+        return tickerUrl.toString().replace('/', '_')
+                                   .replace(':', '_')
+                                   .replace('\\', '_');
     }
 }

@@ -7,10 +7,10 @@ import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.conf.PropertiesLoader;
 import de.frozenbytes.kickermost.dto.Ticker;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
-import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,7 @@ public class Kickermost {
 
                 for(Ticker ticker : activeTickers){
                     if(!activePushingThreads.containsKey(ticker.getTickerUrl())){
+                        logger.info("Start Pushing thread for " + ticker.getTickerUrl());
                         PushingThread pushingThread = new PushingThread(propertiesHolder, ticker.getTickerUrl());
                         activePushingThreads.put(ticker.getTickerUrl(), pushingThread);
                         pushingThread.start();
@@ -59,11 +60,11 @@ public class Kickermost {
 
     private static List<Ticker> getActiveTickers(ExchangeStorage storage) {
         return storage.getTickerList().stream()
-                .filter(ticker -> ticker.getMatch().getStory().stream()
-                        .anyMatch(storyPart -> storyPart.getEvent() == StoryEvent.KICKOFF))
-                .filter(ticker -> ticker.getMatch().getStory().stream()
-                        .noneMatch(storyPart -> storyPart.getEvent() == StoryEvent.FINAL_WHISTLE))
-                .collect(Collectors.toList());
+                                      .filter(ticker -> ticker.getMatch().getStory().stream()
+                                                                                    .anyMatch(storyPart ->
+                                                                                            storyPart.getTime().isAfter(LocalTime.now()) ||
+                                                                                            storyPart.getTime().isAfter(LocalTime.now().minusMinutes(15))))
+                                      .collect(Collectors.toList());
     }
 
 }

@@ -30,6 +30,8 @@ public final class PollingThread {
 
     private Map<TickerUrl, PollingSource> sourceMap = new HashMap<>();
 
+    private boolean firstPoll = true;
+
 
     public PollingThread(final PropertiesHolder propertiesHolder) throws IOException {
         super();
@@ -100,6 +102,10 @@ public final class PollingThread {
     }
 
     private long getGlobalInterval(){
+        if (firstPoll) {
+            firstPoll = false;
+            return 0;
+        }
         return new Random().nextInt(propertiesHolder.getPollingGlobalIntervalMax() - propertiesHolder.getPollingGlobalIntervalMin()) + propertiesHolder.getPollingGlobalIntervalMin();
     }
 
