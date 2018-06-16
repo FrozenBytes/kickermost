@@ -22,6 +22,10 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * kicker.de has different DOM structures for live and past matches.
+ * This class supports only live matches, since the CSS classes for past matches differs!
+ */
 public class Kicker implements PollingSource {
 
     private static final Logger logger = LoggerFactory.getLogger(Kicker.class);
@@ -101,12 +105,12 @@ public class Kicker implements PollingSource {
             //Time
             final Element timeElement = e.selectFirst(CSS_STORY_SUB_TIME);
             if(timeElement == null){
-                logger.debug("Skipped html having no time");
+                logger.info("Skipped html having no time");
                 continue; //skip this unparseable row..
             }
             Preconditions.checkNotNull(timeElement, "timeElement should not be null!");
             final LocalTime time = parseLocalTime(timeElement);
-            logger.debug("Found html row having time: " + time.toString());
+            logger.info("Found html row having time: " + time.toString());
 
             //GameMinute
             final Element gameMinuteElement = e.selectFirst(CSS_STORY_SUB_GAME_MINUTE);
