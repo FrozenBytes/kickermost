@@ -38,7 +38,4 @@ public abstract class Property<T> implements Serializable {
         return value.toString();
     }
 
-    public boolean isPresent(){
-        return value != null;
-    }
 }

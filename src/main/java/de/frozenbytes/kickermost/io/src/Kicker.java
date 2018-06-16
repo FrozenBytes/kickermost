@@ -56,13 +56,23 @@ public class Kicker implements PollingSource {
     @Override
     public TeamScore getTeamAScore(){
         checkDocument();
-        return TeamScore.create(Integer.parseInt(getFirstText(document, CSS_TEAM_A_SCORE)));
+        try {
+            return TeamScore.create(Integer.parseInt(getFirstText(document, CSS_TEAM_A_SCORE)));
+        } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return TeamScore.create(0);
+        }
     }
 
     @Override
     public TeamScore getTeamBScore(){
         checkDocument();
+        try {
         return TeamScore.create(Integer.parseInt(getFirstText(document, CSS_TEAM_B_SCORE)));
+        } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return TeamScore.create(0);
+        }
     }
 
     @Override

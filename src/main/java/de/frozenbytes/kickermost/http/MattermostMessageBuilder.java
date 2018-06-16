@@ -97,12 +97,12 @@ public class MattermostMessageBuilder {
         builder.append(HEADLINE_MEDIUM);
         builder.append(messageParameters.getEvent().getMattermostCode()).append(SPACE).append(headerMessage).append(SPACE).append(buildScoreString(match));
 
-        if (messageParameters.getTitle().isPresent()) {
+        if (messageParameters.getTitle() != null) {
             builder.append(NEW_LINE);
             builder.append(HEADLINE_SMALL).append(messageParameters.getTitle());
         }
 
-        if (messageParameters.getDescription().isPresent()) {
+        if (messageParameters.getDescription() != null) {
             builder.append(NEW_LINE);
             builder.append(messageParameters.getDescription());
         }
@@ -129,7 +129,8 @@ public class MattermostMessageBuilder {
     private static String buildGenericMessage(final StoryPart messageParameters) {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(messageParameters.getGameMinute().isPresent() ? messageParameters.getGameMinute() : "").append(SPACE).append(messageParameters.getDescription());
+        builder.append(messageParameters.getGameMinute() != null ? messageParameters.getGameMinute() : "")
+                .append(SPACE).append(messageParameters.getDescription() != null ? messageParameters.getDescription() : "");
 
         return builder.toString();
     }

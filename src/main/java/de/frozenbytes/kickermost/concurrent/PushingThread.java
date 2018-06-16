@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PushingThread extends Thread {
@@ -69,8 +70,10 @@ public class PushingThread extends Thread {
 
             // Send messages
             for(StoryPart messageParameter : messageParameters){
-                client.postMessage(match, messageParameter);
-                sendMessages.add(messageParameter);
+                if(istAllowedEvent(messageParameter.getEvent())) {
+                    client.postMessage(match, messageParameter);
+                    sendMessages.add(messageParameter);
+                }
             }
 
             // Save send Messages
@@ -93,5 +96,10 @@ public class PushingThread extends Thread {
         return tickerUrl.toString().replace('/', '_')
                                    .replace(':', '_')
                                    .replace('\\', '_');
+    }
+
+    // TODO: Make configurable
+    private boolean istAllowedEvent(StoryEvent event){
+        return Arrays.asList(StoryEvent.getAllowedEvents()).contains(event);
     }
 }

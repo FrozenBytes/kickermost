@@ -30,6 +30,8 @@ public class MattermostWebhookClient {
     }
 
     public void postMessage(final Match match, final StoryPart messageParameters) {
+        Preconditions.checkNotNull(match, "match should not be null");
+        Preconditions.checkNotNull(messageParameters, "messageParameters should not be null");
 //        HttpHost proxy = new HttpHost("", 8080);
 //        RequestConfig config = RequestConfig.custom()
 //                                            .setProxy(proxy)

@@ -15,6 +15,7 @@ public enum StoryEvent {
     VIDEO_PROOF(":movie_camera:"),
     DEFAULT("")
     ;
+    private static final StoryEvent[] ALLOWED_STORY_EVENTS = {GOAL, GOAL_OWN, YELLOW_CARD, YELLOW_RED_CARD, RED_CARD, PENALTY, PENALTY_FAILURE, KICKOFF, FINAL_WHISTLE, VIDEO_PROOF, EXCHANGE};
 
     final String mattermostCode;
 
@@ -24,5 +25,9 @@ public enum StoryEvent {
 
     public String getMattermostCode() {
         return mattermostCode;
+    }
+
+    public static StoryEvent[] getAllowedEvents(){
+        return ALLOWED_STORY_EVENTS;
     }
 }

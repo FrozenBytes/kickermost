@@ -65,15 +65,12 @@ public final class StoryPart implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         StoryPart storyPart = (StoryPart) o;
         return Objects.equals(time, storyPart.time) &&
-                Objects.equals(gameMinute, storyPart.gameMinute) &&
-                event == storyPart.event &&
-                Objects.equals(title, storyPart.title) &&
-                Objects.equals(description, storyPart.description);
+                event == storyPart.event;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(time, gameMinute, event, title, description);
+        return Objects.hash(time, event);
     }
 }
