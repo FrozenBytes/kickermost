@@ -28,21 +28,20 @@ public class Kicker implements PollingSource {
 
     private static final String CSS_ROOT = "div#ovMain";
     private static final String CSS_MATCH = CSS_ROOT + " div#ovMatchHeader div#pageTitle table.liveTitle tr#SpielpaarungLiveTitleRow";
-    private static final String CSS_GAME_NOT_STARTED_1 = CSS_ROOT + " tr#ctl00_PlaceHolderContent_spielereignisse_contentContainer_NoDataEreignisse > td.nodata";
-    private static final String CSS_GAME_NOT_STARTED_2 = CSS_ROOT + " td.lttabst div#ovBoardMainH";
+    private static final String CSS_GAME_NOT_STARTED = CSS_ROOT + " tr#ctl00_PlaceHolderContent_spielereignisse_contentContainer_NoDataEreignisse > td.nodata";
 
-    private static final String CSS_SCOREBOARD = CSS_MATCH + " td.lttabst div.ergBoardExtT";
-    private static final String CSS_TEAM_A_SCORE = CSS_SCOREBOARD + " div#ovBoardExtMainH";
-    private static final String CSS_TEAM_B_SCORE = CSS_SCOREBOARD + " div#ovBoardExtMainA";
+    private static final String CSS_SCOREBOARD = CSS_MATCH + " td.lttabst div.ergBoard";
+    private static final String CSS_TEAM_A_SCORE = CSS_SCOREBOARD + " div#ovBoardMainH";
+    private static final String CSS_TEAM_B_SCORE = CSS_SCOREBOARD + " div#ovBoardMainA";
 
     private static final String CSS_TEAM_A_NAME = CSS_MATCH + " td.lttabvrnName > h1 > a";
     private static final String CSS_TEAM_B_NAME = CSS_MATCH + " td.lttabvrnName+td+td > h1 > a";
 
     private static final String CSS_STORY = CSS_ROOT + " div#ovContent div#spielereignisse_maincont table#tabSpielereignisse tr:not(.trTickerBegegnung,.livecom,.height0,.tr_sep)";
-    private static final String CSS_STORY_SUB_TIME = "div.lttdspzeit > div.ltspst";
-    private static final String CSS_STORY_SUB_GAME_MINUTE = "div.lttdspzeit > div.ltereig > b";
+    private static final String CSS_STORY_SUB_TIME = "div.tickerZeit";
+    private static final String CSS_STORY_SUB_GAME_MINUTE = "div.tickerMin";
     private static final String CSS_STORY_SUB_TEXT = "div.ltereigtxt";
-    private static final String CSS_STORY_SUB_ICON = "div.lttdspst div.ltereig";
+    private static final String CSS_STORY_SUB_ICON = "div.tickerIcon";
 
     private final TickerUrl tickerUrl;
     private Document document;
@@ -92,10 +91,12 @@ public class Kicker implements PollingSource {
             //Time
             final Element timeElement = e.selectFirst(CSS_STORY_SUB_TIME);
             if(timeElement == null){
+                logger.debug("Skipped html having no time");
                 continue; //skip this unparseable row..
             }
             Preconditions.checkNotNull(timeElement, "timeElement should not be null!");
             final LocalTime time = parseLocalTime(timeElement);
+            logger.debug("Found html row having time: " + time.toString());
 
             //GameMinute
             final Element gameMinuteElement = e.selectFirst(CSS_STORY_SUB_GAME_MINUTE);
@@ -185,20 +186,28 @@ public class Kicker implements PollingSource {
                 case "":
                     return StoryEvent.DEFAULT;
                 case "ergtyp_1-m.png":
+                case "ergtyp_1-l_v2.png":
                     return StoryEvent.GOAL;
                 case "eig-tor-m.png":
+                case "eig-tor-l_v2.png":
                     return StoryEvent.GOAL_OWN;
                 case "ergtyp_2-m.png":
+                case "ergtyp_2-l_v2.png":
                     return StoryEvent.YELLOW_CARD;
                 case "ergtyp_3-m.png":
+                case "ergtyp_3-l_v2.png":
                     return StoryEvent.YELLOW_RED_CARD;
                 case "ergtyp_4-m.png":
+                case "ergtyp_4-l_v2.png":
                     return StoryEvent.RED_CARD;
                 case "ergtyp_5-m.png":
+                case "ergtyp_5-l_v2.png":
                     return StoryEvent.EXCHANGE;
                 case "ergtyp_30-m.png":
+                case "ergtyp_30-l_v2.png":
                     return StoryEvent.PENALTY;
                 case "ergtyp_7-m.png":
+                case "ergtyp_7-l_v2.png":
                     return StoryEvent.PENALTY_FAILURE;
                 case "anstoss-m.png":
                     return StoryEvent.KICKOFF;
@@ -220,8 +229,14 @@ public class Kicker implements PollingSource {
     }
 
     private boolean isGameNotStarted(){
-        return document.selectFirst(CSS_GAME_NOT_STARTED_1) != null
-                || document.selectFirst(CSS_GAME_NOT_STARTED_2) != null;
+        if(document.selectFirst(CSS_GAME_NOT_STARTED) != null){
+            return true;
+        }
+        final Element e = document.selectFirst(CSS_TEAM_A_SCORE);
+        if(e != null && e.text().equals("-")){
+            return true;
+        }
+        return false;
     }
 
 }

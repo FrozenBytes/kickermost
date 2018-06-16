@@ -28,7 +28,7 @@ public class KickerTest {
         kicker.reload();
     }
 
-    private static final String URL = "http://www.kicker.de/news/fussball/weltmeisterschaft/spiele/weltmeisterschaft/2018/1/3070406/spielverlauf_russland_saudi-arabien.html#omrss";
+    private static final String URL = "http://www.kicker.de/news/fussball/weltmeisterschaft/spiele/weltmeisterschaft/2018/1/3070425/livematch_kroatien_nigeria.html#omrss";
     private static final String URL_MATCH_NOT_STARTED = "http://www.kicker.de/news/fussball/weltmeisterschaft/spiele/weltmeisterschaft/2018/1/3070431/spielverlauf_costa-rica_serbien-9954.html#omrss";
 
     private static final TeamScore TEAM_A_SCORE = TeamScore.create(5);
