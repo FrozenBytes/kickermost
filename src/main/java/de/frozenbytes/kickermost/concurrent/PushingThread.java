@@ -68,7 +68,20 @@ public class PushingThread extends Thread {
                 continue;
             }
 
-            // Send messages
+            // Send messages - ordered by GameTime
+            messageParameters.sort((o1, o2) -> {
+                if (o1.getGameMinute() == null) {
+                    return -1;
+                }
+                if (o2.getGameMinute() == null) {
+                    return 1;
+                }
+                int comparedGameMinute = o1.getGameMinute().getValue().compareTo(o2.getGameMinute().getValue());
+                if (comparedGameMinute == 0) {
+                    return o1.getTime().compareTo(o2.getTime());
+                }
+                return comparedGameMinute;
+            });
             for(StoryPart messageParameter : messageParameters){
                 if(istAllowedEvent(messageParameter.getEvent())) {
                     client.postMessage(match, messageParameter);
