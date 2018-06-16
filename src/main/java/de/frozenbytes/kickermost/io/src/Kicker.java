@@ -28,7 +28,8 @@ public class Kicker implements PollingSource {
 
     private static final String CSS_ROOT = "div#ovMain";
     private static final String CSS_MATCH = CSS_ROOT + " div#ovMatchHeader div#pageTitle table.liveTitle tr#SpielpaarungLiveTitleRow";
-    private static final String CSS_GAME_NOT_STARTED = CSS_ROOT + " tr#ctl00_PlaceHolderContent_spielereignisse_contentContainer_NoDataEreignisse > td.nodata";
+    private static final String CSS_GAME_NOT_STARTED_1 = CSS_ROOT + " tr#ctl00_PlaceHolderContent_spielereignisse_contentContainer_NoDataEreignisse > td.nodata";
+    private static final String CSS_GAME_NOT_STARTED_2 = CSS_ROOT + " td.lttabst div#ovBoardMainH";
 
     private static final String CSS_SCOREBOARD = CSS_MATCH + " td.lttabst div.ergBoardExtT";
     private static final String CSS_TEAM_A_SCORE = CSS_SCOREBOARD + " div#ovBoardExtMainH";
@@ -124,7 +125,7 @@ public class Kicker implements PollingSource {
             if(document.selectFirst(CSS_ROOT) == null){
                 throw new TickerNotInSourceException(tickerUrl);
             }
-            if(document.selectFirst(CSS_GAME_NOT_STARTED) != null){
+            if(isGameNotStarted()){
                 throw new MatchNotStartedException(tickerUrl);
             }
         } catch (IOException e) {
@@ -216,6 +217,11 @@ public class Kicker implements PollingSource {
 
     private void checkDocument(){
         Preconditions.checkNotNull(document, "document is null. Use reload() first to initialize it!");
+    }
+
+    private boolean isGameNotStarted(){
+        return document.selectFirst(CSS_GAME_NOT_STARTED_1) != null
+                || document.selectFirst(CSS_GAME_NOT_STARTED_2) != null;
     }
 
 }
