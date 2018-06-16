@@ -17,6 +17,8 @@ public class MattermostMessageBuilder {
     private static final String SPACE = " ";
     private static final String GOAL = "TOR!";
     private static final String OWN_GOAL = "EIGENTOR!";
+    private static final String KICKOFF = "Anpfiff!";
+    private static final String FINAL_WHISTLE = "Abpfiff!";
 
     public static String createJsonMessage(final Match match, final StoryPart messageParameters, final PropertiesHolder propertiesHolder) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -28,7 +30,7 @@ public class MattermostMessageBuilder {
     }
 
     private static String buildMattermostMessage(final Match match, final StoryPart messageParameters) {
-        switch (messageParameters.getEvent()){
+        switch (messageParameters.getEvent()) {
             case GOAL:
                 return buildGoalMessage(match, messageParameters, GOAL);
             case GOAL_OWN:
@@ -42,6 +44,10 @@ public class MattermostMessageBuilder {
             case PENALTY:
             case PENALTY_FAILURE:
                 return buildPenaltyMessage(match, messageParameters);
+            case KICKOFF:
+                return buildStartingFinalWhistleMessage(match, messageParameters, KICKOFF);
+            case FINAL_WHISTLE:
+                return buildStartingFinalWhistleMessage(match, messageParameters, FINAL_WHISTLE);
             case DEFAULT:
                 return buildGenericMessage(messageParameters);
             default:
@@ -50,7 +56,7 @@ public class MattermostMessageBuilder {
         }
     }
 
-    private static String buildGoalMessage(final Match match, final StoryPart messageParameters, final String HeaderString){
+    private static String buildGoalMessage(final Match match, final StoryPart messageParameters, final String HeaderString) {
         StringBuilder builder = new StringBuilder();
 
         builder.append(HEADLINE_BIG);
@@ -85,6 +91,25 @@ public class MattermostMessageBuilder {
         return buildGenericMessageWithTitle(match, messageParameters);
     }
 
+    private static String buildStartingFinalWhistleMessage(final Match match, final StoryPart messageParameters, final String headerMessage) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(HEADLINE_MEDIUM);
+        builder.append(messageParameters.getEvent().getMattermostCode()).append(SPACE).append(headerMessage).append(SPACE).append(buildScoreString(match));
+
+        if (messageParameters.getTitle().isPresent()) {
+            builder.append(NEW_LINE);
+            builder.append(HEADLINE_SMALL).append(messageParameters.getTitle());
+        }
+
+        if (messageParameters.getDescription().isPresent()) {
+            builder.append(NEW_LINE);
+            builder.append(messageParameters.getDescription());
+        }
+
+        return builder.toString();
+    }
+
     private static String buildGenericMessageWithTitle(final Match match, final StoryPart messageParameters) {
         StringBuilder builder = new StringBuilder();
 
@@ -104,7 +129,7 @@ public class MattermostMessageBuilder {
     private static String buildGenericMessage(final StoryPart messageParameters) {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(messageParameters.getGameMinute() != null ? messageParameters.getGameMinute() : "").append(SPACE).append(messageParameters.getDescription());
+        builder.append(messageParameters.getGameMinute().isPresent() ? messageParameters.getGameMinute() : "").append(SPACE).append(messageParameters.getDescription());
 
         return builder.toString();
     }

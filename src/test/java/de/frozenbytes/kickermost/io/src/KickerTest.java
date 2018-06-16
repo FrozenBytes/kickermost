@@ -1,6 +1,6 @@
 package de.frozenbytes.kickermost.io.src;
 
-import de.frozenbytes.kickermost.PropertiesLoader;
+import de.frozenbytes.kickermost.conf.PropertiesLoader;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.Story;

@@ -3,7 +3,7 @@ package de.frozenbytes.kickermost.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import de.frozenbytes.kickermost.PropertiesLoader;
+import de.frozenbytes.kickermost.conf.PropertiesLoader;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.StoryPart;

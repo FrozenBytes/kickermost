@@ -2,10 +2,9 @@ package de.frozenbytes.kickermost;
 
 import de.frozenbytes.kickermost.concurrent.PollingThread;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
+import de.frozenbytes.kickermost.conf.PropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 public class Kickermost {
 

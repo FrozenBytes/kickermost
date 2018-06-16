@@ -1,7 +1,5 @@
-package de.frozenbytes.kickermost;
+package de.frozenbytes.kickermost.conf;
 
-import com.google.common.base.Preconditions;
-import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.exception.UnableToParsePropertiesFileException;
 import de.frozenbytes.kickermost.exception.UnableToSavePropertiesFileException;
 

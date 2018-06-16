@@ -1,7 +1,6 @@
 package de.frozenbytes.kickermost.conf;
 
 import com.google.common.base.Preconditions;
-import de.frozenbytes.kickermost.PropertiesLoader;
 
 import java.util.Properties;
 

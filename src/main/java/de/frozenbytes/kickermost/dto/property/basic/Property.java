@@ -3,9 +3,10 @@ package de.frozenbytes.kickermost.dto.property.basic;
 
 import com.google.common.base.Preconditions;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class Property<T> {
+public abstract class Property<T> implements Serializable {
 
     protected final T value;
 
@@ -35,5 +36,9 @@ public abstract class Property<T> {
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    public boolean isPresent(){
+        return value != null;
     }
 }

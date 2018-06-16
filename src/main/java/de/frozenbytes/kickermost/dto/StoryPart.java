@@ -5,9 +5,11 @@ import de.frozenbytes.kickermost.dto.property.StoryDescription;
 import de.frozenbytes.kickermost.dto.property.StoryTitle;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
 
+import java.io.Serializable;
 import java.time.LocalTime;
+import java.util.Objects;
 
-public final class StoryPart {
+public final class StoryPart implements Serializable {
 
     private final LocalTime time;
     private final GameMinute gameMinute;
@@ -57,4 +59,21 @@ public final class StoryPart {
         );
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StoryPart storyPart = (StoryPart) o;
+        return Objects.equals(time, storyPart.time) &&
+                Objects.equals(gameMinute, storyPart.gameMinute) &&
+                event == storyPart.event &&
+                Objects.equals(title, storyPart.title) &&
+                Objects.equals(description, storyPart.description);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(time, gameMinute, event, title, description);
+    }
 }
