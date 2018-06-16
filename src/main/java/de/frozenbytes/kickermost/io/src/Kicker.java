@@ -30,7 +30,7 @@ public class Kicker implements PollingSource {
     private static final String CSS_MATCH = CSS_ROOT + " div#ovMatchHeader div#pageTitle table.liveTitle tr#SpielpaarungLiveTitleRow";
     private static final String CSS_GAME_NOT_STARTED = CSS_ROOT + " tr#ctl00_PlaceHolderContent_spielereignisse_contentContainer_NoDataEreignisse > td.nodata";
 
-    private static final String CSS_SCOREBOARD = CSS_MATCH + " td.lttabst div.scoreboard div.ergBoardExtT";
+    private static final String CSS_SCOREBOARD = CSS_MATCH + " td.lttabst div.ergBoardExtT";
     private static final String CSS_TEAM_A_SCORE = CSS_SCOREBOARD + " div#ovBoardExtMainH";
     private static final String CSS_TEAM_B_SCORE = CSS_SCOREBOARD + " div#ovBoardExtMainA";
 
