@@ -34,9 +34,13 @@ public class Kicker implements PollingSource {
     private static final String CSS_MATCH = CSS_ROOT + " div#ovMatchHeader div#pageTitle table.liveTitle tr#SpielpaarungLiveTitleRow";
     private static final String CSS_GAME_NOT_STARTED = CSS_ROOT + " tr#ctl00_PlaceHolderContent_spielereignisse_contentContainer_NoDataEreignisse > td.nodata";
 
-    private static final String CSS_SCOREBOARD = CSS_MATCH + " td.lttabst div.ergBoard";
-    private static final String CSS_TEAM_A_SCORE = CSS_SCOREBOARD + " div#ovBoardMainH";
-    private static final String CSS_TEAM_B_SCORE = CSS_SCOREBOARD + " div#ovBoardMainA";
+    private static final String CSS_SCOREBOARD_HALFTIME_A = CSS_MATCH + " td.lttabst div.ergBoard";
+    private static final String CSS_TEAM_A_SCORE_HALFTIME_A = CSS_SCOREBOARD_HALFTIME_A + " div#ovBoardMainH";
+    private static final String CSS_TEAM_B_SCORE_HALFTIME_A = CSS_SCOREBOARD_HALFTIME_A + " div#ovBoardMainA";
+
+    private static final String CSS_SCOREBOARD_HALFTIME_B = CSS_MATCH + " td.lttabst div.ergBoardExtT";
+    private static final String CSS_TEAM_A_SCORE_HALFTIME_B = CSS_SCOREBOARD_HALFTIME_B + " div#ovBoardExtMainH";
+    private static final String CSS_TEAM_B_SCORE_HALFTIME_B = CSS_SCOREBOARD_HALFTIME_B + " div#ovBoardExtMainA";
 
     private static final String CSS_TEAM_A_NAME = CSS_MATCH + " td.lttabvrnName > h1 > a";
     private static final String CSS_TEAM_B_NAME = CSS_MATCH + " td.lttabvrnName+td+td > h1 > a";
@@ -60,23 +64,41 @@ public class Kicker implements PollingSource {
     @Override
     public TeamScore getTeamAScore(){
         checkDocument();
-        try {
-            return TeamScore.create(Integer.parseInt(getFirstText(document, CSS_TEAM_A_SCORE)));
-        } catch (Exception e){
-            logger.error(e.getMessage(), e);
-            return TeamScore.create(0);
+        final Element a = document.selectFirst(CSS_TEAM_A_SCORE_HALFTIME_A);
+        final Element b = document.selectFirst(CSS_TEAM_A_SCORE_HALFTIME_B);
+
+        if(a != null && b != null){
+            throw new IllegalStateException("Both halftimes could be found. This should not be possible?!");
         }
+
+        if(a != null){
+            return TeamScore.create(Integer.parseInt(a.text()));
+        }
+        if(b != null){
+            return TeamScore.create(Integer.parseInt(b.text()));
+        }
+
+        throw new IllegalStateException("Neither halftime A nor B could be found!");
     }
 
     @Override
     public TeamScore getTeamBScore(){
         checkDocument();
-        try {
-        return TeamScore.create(Integer.parseInt(getFirstText(document, CSS_TEAM_B_SCORE)));
-        } catch (Exception e){
-            logger.error(e.getMessage(), e);
-            return TeamScore.create(0);
+        final Element a = document.selectFirst(CSS_TEAM_B_SCORE_HALFTIME_A);
+        final Element b = document.selectFirst(CSS_TEAM_B_SCORE_HALFTIME_B);
+
+        if(a != null && b != null){
+            throw new IllegalStateException("Both halftimes could be found. This should not be possible?!");
         }
+
+        if(a != null){
+            return TeamScore.create(Integer.parseInt(a.text()));
+        }
+        if(b != null){
+            return TeamScore.create(Integer.parseInt(b.text()));
+        }
+
+        throw new IllegalStateException("Neither halftime A nor B could be found!");
     }
 
     @Override
@@ -246,7 +268,7 @@ public class Kicker implements PollingSource {
         if(document.selectFirst(CSS_GAME_NOT_STARTED) != null){
             return true;
         }
-        final Element e = document.selectFirst(CSS_TEAM_A_SCORE);
+        final Element e = document.selectFirst(CSS_TEAM_A_SCORE_HALFTIME_A);
         if(e != null && e.text().equals("-")){
             return true;
         }
