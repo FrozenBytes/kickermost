@@ -14,19 +14,12 @@ public final class PollingSourceFactory {
         return new Kicker(url);
     }
 
-    public static List<TickerUrl> parseRssFeed(final String rssUrl) throws IOException {
+    public static List<TickerUrl> parseRssFeed(final String rssUrl, final String rssFeedUrlContains) throws IOException {
         return new RssParser(rssUrl).parse().stream()
                 .map(Property::getValue)
-                .map(PollingSourceFactory::applyKickerRssLinkHacks) //special for kicker.de an ugly like uli h. :(
+                .filter(v -> v.contains(rssFeedUrlContains))
                 .map(TickerUrl::create)
                 .collect(Collectors.toList());
-    }
-
-    private static String applyKickerRssLinkHacks(String link){
-        return link.replace("spielbericht", "spielverlauf")
-                .replace("spielvorschau", "spielverlauf")
-                .replace("spielanalyse", "spielverlauf")
-                .replace("spielinfo", "spielverlauf");
     }
 
 }

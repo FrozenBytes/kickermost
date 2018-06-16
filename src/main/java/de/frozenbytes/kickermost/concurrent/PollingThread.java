@@ -37,7 +37,7 @@ public final class PollingThread {
         this.propertiesHolder = propertiesHolder;
         this.thread = new Thread(this::execute);
         this.thread.setDaemon(true); // terminate this thread, if the superior user thread terminates
-        this.tickerUrlList = PollingSourceFactory.parseRssFeed(propertiesHolder.getPollingRssFeedUrl());
+        this.tickerUrlList = PollingSourceFactory.parseRssFeed(propertiesHolder.getPollingRssFeedUrl(), propertiesHolder.getPollingFssFeedUrlContains());
     }
 
     public void start(){

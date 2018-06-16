@@ -17,6 +17,7 @@ public final class PropertiesHolder {
     private final int pollingTickerIntervalMax;
 
     private final String pollingRssFeedUrl;
+    private final String pollingFssFeedUrlContains;
 
 
     public PropertiesHolder(final Properties properties) {
@@ -29,6 +30,7 @@ public final class PropertiesHolder {
         this.pollingTickerIntervalMin = getIntProperty(properties, PropertiesLoader.POLLING_TICKER_INTERVAL_MIN);
         this.pollingTickerIntervalMax = getIntProperty(properties, PropertiesLoader.POLLING_TICKER_INTERVAL_MAX);
         this.pollingRssFeedUrl = getStringProperty(properties, PropertiesLoader.POLLING_RSS_FEED_URL);
+        this.pollingFssFeedUrlContains = getStringProperty(properties, PropertiesLoader.POLLING_RSS_FEED_URL_CONTAINS);
     }
 
     public String getMattermostUsername() {
@@ -65,6 +67,10 @@ public final class PropertiesHolder {
 
     public String getPollingRssFeedUrl() {
         return pollingRssFeedUrl;
+    }
+
+    public String getPollingFssFeedUrlContains() {
+        return pollingFssFeedUrlContains;
     }
 
     private String getStringProperty(final Properties properties, final String key){
