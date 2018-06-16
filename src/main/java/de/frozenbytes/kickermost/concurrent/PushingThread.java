@@ -13,13 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PushingThread extends Thread {
 
     private static final Logger logger = LoggerFactory.getLogger(PushingThread.class);
 
-    private final PropertiesHolder propertiesHolder;
     private final TickerUrl tickerUrl;
     private final MattermostWebhookClient client;
 
@@ -28,7 +28,6 @@ public class PushingThread extends Thread {
         super();
         Preconditions.checkNotNull(propertiesHolder, "propertiesHolder should not be null!");
         Preconditions.checkNotNull(tickerUrl, "tickerUrl should not be null!");
-        this.propertiesHolder = propertiesHolder;
         this.tickerUrl = tickerUrl;
         this.client = new MattermostWebhookClient(propertiesHolder);
         this.setDaemon(true);
@@ -48,12 +47,14 @@ public class PushingThread extends Thread {
 
             final Match match = ticker.getMatch();
             List<StoryPart> messageParameters = match.getStory();
-            List<StoryPart> sendMessages;
+            List<StoryPart> sendMessages = new ArrayList<>();
 
             // Read send messages
             try(FileInputStream fis = new FileInputStream(convertTickerUrlToFileName(tickerUrl) + ".tmp")) {//
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 sendMessages = (List<StoryPart>) ois.readObject();
+            } catch (FileNotFoundException e){
+                // that's normal for a new game
             } catch (IOException | ClassNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 break;
