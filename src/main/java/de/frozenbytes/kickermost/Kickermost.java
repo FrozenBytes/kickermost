@@ -5,15 +5,14 @@ import de.frozenbytes.kickermost.concurrent.PushingThread;
 import de.frozenbytes.kickermost.concurrent.exchange.ExchangeStorage;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.conf.PropertiesLoader;
+import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Ticker;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Kickermost {
@@ -59,10 +58,20 @@ public class Kickermost {
     }
 
     private static List<Ticker> getActiveTickers(ExchangeStorage storage) {
-        return storage.getTickerList().stream()
-                                      .filter(ticker -> ticker.getMatch().getStory().stream()
-                                                                                    .anyMatch(storyPart -> storyPart.getSystemTime().isAfter(LocalTime.now().minusMinutes(15))))
-                                      .collect(Collectors.toList());
+        Iterator<Ticker> tickerIterator = storage.getTickerList().iterator();
+        List<Ticker> activeTicker = new ArrayList<>();
+        while (tickerIterator.hasNext()){
+            Ticker ticker = tickerIterator.next();
+            Iterator<StoryPart> storyPartIterator = ticker.getMatch().getStory().iterator();
+            while (storyPartIterator.hasNext()){
+                StoryPart storyPart = storyPartIterator.next();
+                if(storyPart.getSystemTime().isAfter(LocalTime.now().minusMinutes(20))){
+                    activeTicker.add(ticker);
+                    break;
+                }
+            }
+        }
+        return activeTicker;
     }
 
 }
