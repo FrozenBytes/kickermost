@@ -6,6 +6,7 @@ import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Ticker;
+import de.frozenbytes.kickermost.dto.property.StoryPartTimeLineComparator;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import de.frozenbytes.kickermost.http.MattermostWebhookClient;
@@ -69,19 +70,7 @@ public class PushingThread extends Thread {
             }
 
             // Send messages - ordered by GameTime
-            messageParameters.sort((o1, o2) -> {
-                if (o1.getGameMinute() == null) {
-                    return -1;
-                }
-                if (o2.getGameMinute() == null) {
-                    return 1;
-                }
-                int comparedGameMinute = o1.getGameMinute().getValue().compareTo(o2.getGameMinute().getValue());
-                if (comparedGameMinute == 0) {
-                    return o1.getTime().compareTo(o2.getTime());
-                }
-                return comparedGameMinute;
-            });
+            messageParameters.sort(new StoryPartTimeLineComparator());
             for(StoryPart messageParameter : messageParameters){
                 if(istAllowedEvent(messageParameter.getEvent())) {
                     client.postMessage(match, messageParameter);
