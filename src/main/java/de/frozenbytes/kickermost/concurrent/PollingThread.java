@@ -91,7 +91,8 @@ public final class PollingThread {
                         Ticker ticker;
                         if(storage.containsTickerWithUrl(tickerUrl)){
                             ticker = storage.getTickerByUrl(tickerUrl);
-                            ticker.updateMatch(createMatchFromSource(source));
+                            ticker.getMatch().getTeamA().setScore(source.getTeamAScore());
+                            ticker.getMatch().getTeamB().setScore(source.getTeamBScore());
                         }else{
                             ticker = new Ticker(tickerUrl, createMatchFromSource(source));
                             storage.addTicker(ticker);

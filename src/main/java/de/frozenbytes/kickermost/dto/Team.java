@@ -1,16 +1,18 @@
 package de.frozenbytes.kickermost.dto;
 
+import com.google.common.base.Preconditions;
 import de.frozenbytes.kickermost.dto.property.TeamName;
 import de.frozenbytes.kickermost.dto.property.TeamScore;
 
 public final class Team {
 
     private final TeamName name;
-    private final TeamScore score;
+    private TeamScore score;
 
     public Team(final TeamName name, final TeamScore score) {
+        Preconditions.checkNotNull(name, "name should not be null!");
         this.name = name;
-        this.score = score;
+        setScore(score);
     }
 
     public TeamName getName() {
@@ -20,4 +22,10 @@ public final class Team {
     public TeamScore getScore() {
         return score;
     }
+
+    public void setScore(TeamScore score){
+        Preconditions.checkNotNull(score, "score should not be null!");
+        this.score = score;
+    }
+
 }

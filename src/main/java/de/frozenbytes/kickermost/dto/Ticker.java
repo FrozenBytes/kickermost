@@ -8,7 +8,7 @@ import java.util.Objects;
 public final class Ticker {
 
     private final TickerUrl tickerUrl;
-    private Match match;
+    private final Match match;
 
     public Ticker(final TickerUrl tickerUrl, final Match match) {
         Preconditions.checkNotNull(tickerUrl, "tickerUrl should not be null!");
@@ -38,7 +38,4 @@ public final class Ticker {
         return Objects.hash(tickerUrl);
     }
 
-    public void updateMatch(Match matchFromSource) {
-        this.match = matchFromSource;
-    }
 }
