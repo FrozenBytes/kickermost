@@ -8,7 +8,7 @@ import java.util.Objects;
 public final class Ticker {
 
     private final TickerUrl tickerUrl;
-    private final Match match;
+    private Match match;
 
     public Ticker(final TickerUrl tickerUrl, final Match match) {
         Preconditions.checkNotNull(tickerUrl, "tickerUrl should not be null!");
@@ -36,5 +36,9 @@ public final class Ticker {
     @Override
     public int hashCode() {
         return Objects.hash(tickerUrl);
+    }
+
+    public void updateMatch(Match matchFromSource) {
+        this.match = matchFromSource;
     }
 }
