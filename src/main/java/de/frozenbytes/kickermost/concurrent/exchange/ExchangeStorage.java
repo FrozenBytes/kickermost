@@ -6,6 +6,7 @@ import de.frozenbytes.kickermost.dto.Ticker;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class ExchangeStorage {
@@ -29,7 +30,7 @@ public final class ExchangeStorage {
 
 
     private ExchangeStorage(){
-        this.tickerList = new ArrayList<>();
+        this.tickerList = Collections.synchronizedList(new ArrayList<>());
     }
 
     public ImmutableList<Ticker> getTickerList(){

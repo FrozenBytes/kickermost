@@ -57,24 +57,27 @@ public class Kickermost {
     }
 
     private static List<Ticker> getActiveTickers(ExchangeStorage storage) {
-        Iterator<Ticker> tickerIterator = storage.getTickerList().iterator();
-        List<Ticker> activeTicker = new ArrayList<>();
-        while (tickerIterator.hasNext()){
-            Ticker ticker = tickerIterator.next();
-            Iterator<StoryPart> storyPartIterator = ticker.getMatch().getStory().iterator();
-            boolean gameActive = true;
-            while (storyPartIterator.hasNext()){
-                StoryPart storyPart = storyPartIterator.next();
-                if(storyPart.getEvent() == StoryEvent.GAME_END){
-                    gameActive = false;
-                    break;
+        synchronized (storage.getTickerList()) {
+            Iterator<Ticker> tickerIterator = storage.getTickerList().iterator();
+
+            List<Ticker> activeTicker = new ArrayList<>();
+            while (tickerIterator.hasNext()) {
+                Ticker ticker = tickerIterator.next();
+                Iterator<StoryPart> storyPartIterator = ticker.getMatch().getStory().iterator();
+                boolean gameActive = true;
+                while (storyPartIterator.hasNext()) {
+                    StoryPart storyPart = storyPartIterator.next();
+                    if (storyPart.getEvent() == StoryEvent.GAME_END) {
+                        gameActive = false;
+                        break;
+                    }
+                }
+                if (gameActive) {
+                    activeTicker.add(ticker);
                 }
             }
-            if(gameActive){
-                activeTicker.add(ticker);
-            }
+            return activeTicker;
         }
-        return activeTicker;
     }
 
 }
