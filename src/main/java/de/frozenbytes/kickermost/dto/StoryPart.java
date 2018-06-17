@@ -11,6 +11,8 @@ import java.util.Objects;
 
 public final class StoryPart implements Serializable {
 
+    private static final long serialVersionUID = -682265221944007494L;
+
     private final LocalTime systemTime;
     private final LocalTime time;
     private final GameMinute gameMinute;

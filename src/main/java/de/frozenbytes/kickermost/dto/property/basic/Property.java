@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public abstract class Property<T> implements Serializable {
 
+    private static final long serialVersionUID = -6634565114087203376L;
+
     protected final T value;
 
     public Property(T value) {

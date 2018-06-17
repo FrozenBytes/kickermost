@@ -17,6 +17,6 @@ public class StoryPartTimeLineComparator implements Comparator<StoryPart> {
         if(message1.getTime() != null && message2.getTime() != null) {
             return message1.getTime().compareTo(message2.getTime());
         }
-        return message1.getSystemTime().compareTo(message2.getSystemTime());
+        return message1.getSystemTime().compareTo(message2.getSystemTime()) * -1;
     }
 }
