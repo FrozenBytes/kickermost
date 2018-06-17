@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,8 +74,15 @@ public class PushingThread extends Thread {
             messageParameters.sort(new StoryPartTimeLineComparator());
             for(StoryPart messageParameter : messageParameters){
                 if(istAllowedEvent(messageParameter.getEvent())) {
-                    client.postMessage(match, messageParameter);
-                    sendMessages.add(messageParameter);
+                    // Send message if it is a game start/stop/end message OR
+                    // the description is filled OR
+                    // the message is at least 2 minutes old
+                    if(isStartStopEvent(messageParameter.getEvent()) ||
+                       messageParameter.getDescription() != null ||
+                       messageParameter.getTime() != null && messageParameter.getTime().isBefore(LocalTime.now().minusMinutes(2))) {
+                        client.postMessage(match, messageParameter);
+                        sendMessages.add(messageParameter);
+                    }
                 }
             }
 
@@ -103,5 +111,9 @@ public class PushingThread extends Thread {
     // TODO: Make configurable
     private boolean istAllowedEvent(StoryEvent event){
         return Arrays.asList(StoryEvent.getAllowedEvents()).contains(event);
+    }
+
+    private boolean isStartStopEvent(StoryEvent storyEvent){
+        return Arrays.asList(StoryEvent.startStopEvents).contains(storyEvent);
     }
 }

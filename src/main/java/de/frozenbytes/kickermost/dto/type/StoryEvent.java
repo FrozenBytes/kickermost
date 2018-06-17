@@ -23,12 +23,24 @@ public enum StoryEvent {
     OVERTIME_B_START(":arrow_forward:"),
     OVERTIME_B_END(":pause_button:"),
     PENALTIES_TIME(":goal_net:"),
-    GAME_END(":pause_button:"),
+    GAME_END(":stop_button:"),
 
     DEFAULT("")
     ;
 
     final String mattermostCode;
+
+    public static StoryEvent[] startStopEvents = {
+            HALF_TIME_A_START,
+            HALF_TIME_A_END,
+            HALF_TIME_B_START,
+            HALF_TIME_B_END,
+            OVERTIME_A_START,
+            OVERTIME_A_END,
+            OVERTIME_B_START,
+            OVERTIME_B_END,
+            PENALTIES_TIME,
+            GAME_END,};
 
     StoryEvent(String mattermostCode){
         this.mattermostCode = mattermostCode;

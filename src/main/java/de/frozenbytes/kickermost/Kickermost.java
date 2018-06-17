@@ -8,12 +8,11 @@ import de.frozenbytes.kickermost.conf.PropertiesLoader;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Ticker;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
+import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Kickermost {
 
@@ -63,12 +62,16 @@ public class Kickermost {
         while (tickerIterator.hasNext()){
             Ticker ticker = tickerIterator.next();
             Iterator<StoryPart> storyPartIterator = ticker.getMatch().getStory().iterator();
+            boolean gameActive = true;
             while (storyPartIterator.hasNext()){
                 StoryPart storyPart = storyPartIterator.next();
-                if(storyPart.getSystemTime().isAfter(LocalTime.now().minusMinutes(20))){
-                    activeTicker.add(ticker);
+                if(storyPart.getEvent() == StoryEvent.GAME_END){
+                    gameActive = false;
                     break;
                 }
+            }
+            if(gameActive){
+                activeTicker.add(ticker);
             }
         }
         return activeTicker;
