@@ -17,8 +17,7 @@ public class MattermostMessageBuilder {
     private static final String SPACE = " ";
     private static final String GOAL = "TOR!";
     private static final String OWN_GOAL = "EIGENTOR!";
-    private static final String KICKOFF = "Anpfiff!";
-    private static final String FINAL_WHISTLE = "Abpfiff!";
+    private static final String MATCH = "Begegnung:";
 
     public static String createJsonMessage(final Match match, final StoryPart messageParameters, final PropertiesHolder propertiesHolder) {
         JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -44,7 +43,6 @@ public class MattermostMessageBuilder {
             case PENALTY:
             case PENALTY_FAILURE:
                 return buildPenaltyMessage(match, messageParameters);
-            case VIDEO_PROOF:
             case HALF_TIME_A_START:
             case HALF_TIME_A_END:
             case HALF_TIME_B_START:
@@ -53,10 +51,12 @@ public class MattermostMessageBuilder {
             case OVERTIME_A_END:
             case OVERTIME_B_START:
             case OVERTIME_B_END:
-            case PENALTIES_TIME:
             case GAME_END:
+            case PENALTIES_TIME:
+                return buildKickOffMessage(match, messageParameters);
+            case VIDEO_PROOF:
             case DEFAULT:
-                return buildGenericMessage(messageParameters);
+                return buildGenericMessage(match, messageParameters);
             default:
                 throw new IllegalArgumentException("Unknown type!");
 
@@ -98,21 +98,12 @@ public class MattermostMessageBuilder {
         return buildGenericMessageWithTitle(match, messageParameters);
     }
 
-    private static String buildStartingFinalWhistleMessage(final Match match, final StoryPart messageParameters, final String headerMessage) {
+    private static String buildKickOffMessage(final Match match, final StoryPart messageParameters) {
         StringBuilder builder = new StringBuilder();
 
         builder.append(HEADLINE_MEDIUM);
-        builder.append(messageParameters.getEvent().getMattermostCode()).append(SPACE).append(headerMessage).append(SPACE).append(buildScoreString(match));
-
-        if (messageParameters.getTitle() != null) {
-            builder.append(NEW_LINE);
-            builder.append(HEADLINE_SMALL).append(messageParameters.getTitle());
-        }
-
-        if (messageParameters.getDescription() != null) {
-            builder.append(NEW_LINE);
-            builder.append(messageParameters.getDescription());
-        }
+        builder.append(messageParameters.getEvent().getMattermostCode()).append(SPACE)
+               .append(messageParameters.getTitle()).append(SPACE).append(MATCH).append(SPACE).append(buildScoreString(match));
 
         return builder.toString();
     }
@@ -122,7 +113,8 @@ public class MattermostMessageBuilder {
 
         builder.append(HEADLINE_SMALL);
         builder.append(messageParameters.getEvent().getMattermostCode()).append(SPACE);
-        builder.append(messageParameters.getGameMinute()).append(SPACE).append(messageParameters.getTitle());
+        builder.append(messageParameters.getGameMinute() != null ? messageParameters.getGameMinute() : "");
+        builder.append(SPACE).append(messageParameters.getTitle());
 
         builder.append(NEW_LINE);
         builder.append(buildScoreString(match));
@@ -133,8 +125,16 @@ public class MattermostMessageBuilder {
         return builder.toString();
     }
 
-    private static String buildGenericMessage(final StoryPart messageParameters) {
+    private static String buildGenericMessage(final Match match, final StoryPart messageParameters) {
         StringBuilder builder = new StringBuilder();
+
+        builder.append(HEADLINE_SMALL);
+        builder.append(messageParameters.getEvent().getMattermostCode()).append(SPACE);
+        builder.append(messageParameters.getTitle() != null ? messageParameters.getTitle() : "");
+
+        builder.append(NEW_LINE);
+        builder.append(buildScoreString(match));
+        builder.append(NEW_LINE);
 
         builder.append(messageParameters.getGameMinute() != null ? messageParameters.getGameMinute() : "")
                 .append(SPACE).append(messageParameters.getDescription() != null ? messageParameters.getDescription() : "");
