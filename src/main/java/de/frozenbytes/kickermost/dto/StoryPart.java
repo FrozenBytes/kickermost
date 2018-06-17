@@ -17,6 +17,7 @@ public final class StoryPart implements Serializable {
     private final StoryEvent event;
     private final StoryTitle title;
     private final StoryDescription description;
+    private boolean sentToMattermost;
 
 
     public StoryPart(final LocalTime systemTime,
@@ -31,6 +32,7 @@ public final class StoryPart implements Serializable {
         this.event = event;
         this.title = title;
         this.description = description;
+        this.sentToMattermost = false;
     }
 
     public LocalTime getSystemTime() {
@@ -55,6 +57,18 @@ public final class StoryPart implements Serializable {
 
     public StoryDescription getDescription() {
         return description;
+    }
+
+    public boolean isSentToMattermost() {
+        synchronized (this){
+            return sentToMattermost;
+        }
+    }
+
+    public void setSentToMattermost(boolean sentToMattermost) {
+        synchronized (this){
+            this.sentToMattermost = sentToMattermost;
+        }
     }
 
     @Override

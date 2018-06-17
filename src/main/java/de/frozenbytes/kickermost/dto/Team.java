@@ -20,12 +20,16 @@ public final class Team {
     }
 
     public TeamScore getScore() {
-        return score;
+        synchronized (this){
+            return score;
+        }
     }
 
     public void setScore(TeamScore score){
-        Preconditions.checkNotNull(score, "score should not be null!");
-        this.score = score;
+        synchronized (this){
+            Preconditions.checkNotNull(score, "score should not be null!");
+            this.score = score;
+        }
     }
 
 }

@@ -1,5 +1,7 @@
 package de.frozenbytes.kickermost.dto;
 
+import com.google.common.collect.ImmutableList;
+
 public final class Match {
 
     private final Team teamA;
@@ -20,7 +22,16 @@ public final class Match {
         return teamB;
     }
 
-    public Story getStory() {
-        return story;
+    public ImmutableList<StoryPart> getStory() {
+        synchronized (story){
+            return ImmutableList.copyOf(story);
+        }
     }
+
+    public void addStoryPart(final StoryPart storyPart){
+        synchronized (story) {
+            story.add(storyPart);
+        }
+    }
+
 }

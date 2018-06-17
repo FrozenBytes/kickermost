@@ -1,6 +1,7 @@
 package de.frozenbytes.kickermost.concurrent;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import de.frozenbytes.kickermost.concurrent.exchange.ExchangeStorage;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
@@ -98,11 +99,12 @@ public final class PollingThread {
                             storage.addTicker(ticker);
                         }
 
-                        final Story prevStory = ticker.getMatch().getStory();
+                        final Match match = ticker.getMatch();
+                        final ImmutableList<StoryPart> prevStoryPartList = match.getStory();
                         final Story currentStory = source.getStory();
                         for(StoryPart currentStoryPart : currentStory){
-                            if(!prevStory.contains(currentStoryPart)){
-                                prevStory.add(currentStoryPart); //update the previous story with the new content
+                            if(!prevStoryPartList.contains(currentStoryPart)){
+                                match.addStoryPart(currentStoryPart); //update the previous story with the new content
                             }
                         }
                     }catch (TickerNotInSourceException | ReloadPollingSourceException | MatchNotStartedException e){

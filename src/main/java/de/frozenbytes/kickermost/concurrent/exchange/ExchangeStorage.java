@@ -30,7 +30,7 @@ public final class ExchangeStorage {
 
 
     private ExchangeStorage(){
-        this.tickerList = Collections.synchronizedList(new ArrayList<>());
+        this.tickerList = new ArrayList<>();
     }
 
     public ImmutableList<Ticker> getTickerList(){

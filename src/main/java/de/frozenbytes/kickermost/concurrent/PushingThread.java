@@ -1,6 +1,7 @@
 package de.frozenbytes.kickermost.concurrent;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import de.frozenbytes.kickermost.concurrent.exchange.ExchangeStorage;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
@@ -18,6 +19,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PushingThread extends Thread {
 
@@ -49,10 +51,10 @@ public class PushingThread extends Thread {
             final Ticker ticker = storage.getTickerByUrl(tickerUrl);
 
             final Match match = ticker.getMatch();
-            List<StoryPart> messageParameters = match.getStory();
-            List<StoryPart> sendMessages = new ArrayList<>();
+            final ImmutableList<StoryPart> messageParameters = match.getStory();
 
             // Read send messages
+            List<StoryPart> sendMessages = new ArrayList<>();
             try(FileInputStream fis = new FileInputStream(convertTickerUrlToFileName(tickerUrl) + ".tmp")) {//
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 sendMessages = (List<StoryPart>) ois.readObject();
@@ -63,25 +65,32 @@ public class PushingThread extends Thread {
                 break;
             }
 
-            messageParameters.removeAll(sendMessages);
+            //set sentToMattermostFlag by remembered storyParts
+            for(StoryPart fileStoryPart : sendMessages){
+                final StoryPart messageParameter = messageParameters.get(messageParameters.indexOf(fileStoryPart));
+                if(messageParameter != null){
+                    messageParameter.setSentToMattermost(true);
+                }
+            }
 
+            final List<StoryPart> partsToSendList = messageParameters.stream().filter(m -> !m.isSentToMattermost()).collect(Collectors.toList());
             //  No new messages - Skip
-            if(messageParameters.isEmpty()){
+            if(partsToSendList.isEmpty()){
                 continue;
             }
 
             // Send messages - ordered by GameTime
-            messageParameters.sort(new StoryPartTimeLineComparator());
-            for(StoryPart messageParameter : messageParameters){
-                if(istAllowedEvent(messageParameter.getEvent())) {
+            partsToSendList.sort(new StoryPartTimeLineComparator());
+            for(StoryPart partToSend : partsToSendList){
+                if(isAllowedEvent(partToSend.getEvent())) {
                     // Send message if it is a game start/stop/end message OR
                     // the description is filled OR
                     // the message is at least 2 minutes old
-                    if(isStartStopEvent(messageParameter.getEvent()) ||
-                       messageParameter.getDescription() != null ||
-                       messageParameter.getTime() != null && messageParameter.getTime().isBefore(LocalTime.now().minusMinutes(2))) {
-                        client.postMessage(match, messageParameter);
-                        sendMessages.add(messageParameter);
+                    if(isStartStopEvent(partToSend.getEvent()) ||
+                       partToSend.getDescription() != null ||
+                       partToSend.getTime() != null && partToSend.getTime().isBefore(LocalTime.now().minusMinutes(2))) {
+                        client.postMessage(match, partToSend);
+                        partToSend.setSentToMattermost(true);
                     }
                 }
             }
@@ -89,7 +98,7 @@ public class PushingThread extends Thread {
             // Save send Messages
             try(FileOutputStream fos = new FileOutputStream(convertTickerUrlToFileName(tickerUrl) + ".tmp")) {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(sendMessages);
+                oos.writeObject(messageParameters.stream().filter(StoryPart::isSentToMattermost).collect(Collectors.toList()));
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
                 break;
@@ -109,7 +118,7 @@ public class PushingThread extends Thread {
     }
 
     // TODO: Make configurable
-    private boolean istAllowedEvent(StoryEvent event){
+    private boolean isAllowedEvent(StoryEvent event){
         return Arrays.asList(StoryEvent.getAllowedEvents()).contains(event);
     }
 
