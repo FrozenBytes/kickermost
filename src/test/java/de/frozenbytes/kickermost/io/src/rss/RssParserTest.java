@@ -1,7 +1,8 @@
 package de.frozenbytes.kickermost.io.src.rss;
 
-import de.frozenbytes.kickermost.conf.PropertiesLoader;
+import de.frozenbytes.kickermost.BasicTest;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
+import de.frozenbytes.kickermost.conf.PropertiesLoader;
 import de.frozenbytes.kickermost.dto.property.RssLink;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -12,14 +13,14 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class RssParserTest {
+public class RssParserTest extends BasicTest {
 
     private static PropertiesHolder propertiesHolder;
     private RssParser parser;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        propertiesHolder = PropertiesLoader.createPropertiesHolder();
+        propertiesHolder = PropertiesLoader.createPropertiesHolder(CONFIG_FILEPATH);
     }
 
     @Before

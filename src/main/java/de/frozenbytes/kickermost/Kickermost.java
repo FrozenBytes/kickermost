@@ -9,10 +9,15 @@ import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Ticker;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
+import de.frozenbytes.kickermost.util.arg.ArgumentResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class Kickermost {
 
@@ -20,10 +25,15 @@ public class Kickermost {
 
     private static final Map<TickerUrl, PushingThread> activePushingThreads = new HashMap<>();
 
+    /**
+     *
+     * @param args
+     *  -config src/main/resources/de/frozenbytes/kickermost/conf/config.properties
+     */
     public static void main(String[] args) {
         logger.info("START");
         try{
-            final PropertiesHolder propertiesHolder = PropertiesLoader.createPropertiesHolder();
+            final PropertiesHolder propertiesHolder = PropertiesLoader.createPropertiesHolder(ArgumentResolver.resolveConfigFilePath(args));
 
             final PollingThread pollingThread = new PollingThread(propertiesHolder);
             pollingThread.start();

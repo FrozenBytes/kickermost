@@ -1,5 +1,6 @@
 package de.frozenbytes.kickermost.io.src;
 
+import de.frozenbytes.kickermost.BasicTest;
 import de.frozenbytes.kickermost.conf.PropertiesLoader;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
@@ -19,11 +20,11 @@ import org.junit.Test;
 import static org.fest.assertions.Assertions.assertThat;
 
 
-public class KickerTest {
+public class KickerTest extends BasicTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        propertiesHolder = PropertiesLoader.createPropertiesHolder();
+        propertiesHolder = PropertiesLoader.createPropertiesHolder(CONFIG_FILEPATH);
         kicker = new Kicker(TickerUrl.create(URL));
         kicker.reload();
     }

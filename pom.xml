@@ -12,7 +12,10 @@
 
     <properties>
         <main.class>de.frozenbytes.kickermost.Kickermost</main.class>
-        <outputFileShaded>${project.basedir}${file.separator}deploy${file.separator}${project.artifactId}.jar</outputFileShaded>
+        <output.dir>${project.basedir}${file.separator}deploy${file.separator}</output.dir>
+        <output.file>${output.dir}${project.artifactId}.jar</output.file>
+        <config.properties>de/frozenbytes/kickermost/conf/config.properties</config.properties>
+        <config.properties.path>src/main/resources/${config.properties}</config.properties.path>
     </properties>
 
     <dependencies>
@@ -107,7 +110,7 @@
                             <minimizeJar>false</minimizeJar>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
-                            <outputFile>${outputFileShaded}</outputFile>
+                            <outputFile>${output.file}</outputFile>
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -121,10 +124,29 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>${config.properties}</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- copy the config.properties next to the previously shaded jar -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <copy file="${config.properties.path}" todir="${output.dir}" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

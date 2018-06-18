@@ -3,17 +3,22 @@ package de.frozenbytes.kickermost.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import de.frozenbytes.kickermost.conf.PropertiesLoader;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
+import de.frozenbytes.kickermost.conf.PropertiesLoader;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Team;
-import de.frozenbytes.kickermost.dto.property.*;
+import de.frozenbytes.kickermost.dto.property.GameMinute;
+import de.frozenbytes.kickermost.dto.property.StoryDescription;
+import de.frozenbytes.kickermost.dto.property.StoryTitle;
+import de.frozenbytes.kickermost.dto.property.TeamName;
+import de.frozenbytes.kickermost.dto.property.TeamScore;
 import de.frozenbytes.kickermost.dto.type.Country;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import de.frozenbytes.kickermost.exception.UnableToParsePropertiesFileException;
 import de.frozenbytes.kickermost.exception.UnableToSavePropertiesFileException;
 import de.frozenbytes.kickermost.http.MattermostWebhookClient;
+import de.frozenbytes.kickermost.util.arg.ArgumentResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,10 +60,12 @@ public class KickermostWindow {
    private JSpinner spnGameTime;
 
    private final MattermostWebhookClient client;
+   private final String configFilePath;
    private PropertiesHolder propertiesHolder;
 
-   public KickermostWindow() throws UnableToParsePropertiesFileException {
-      this.propertiesHolder = PropertiesLoader.createPropertiesHolder();
+   public KickermostWindow(final String configFilePath) throws UnableToParsePropertiesFileException {
+      this.configFilePath = configFilePath;
+      this.propertiesHolder = PropertiesLoader.createPropertiesHolder(configFilePath);
 
       setupUI();
       JFrame frame = new JFrame("Kickermost");
@@ -75,8 +82,8 @@ public class KickermostWindow {
 
    public static void main(String[] args) {
       try {
-         new KickermostWindow();
-      } catch (UnableToParsePropertiesFileException e) {
+         new KickermostWindow(ArgumentResolver.resolveConfigFilePath(args));
+      } catch (Exception e) {
          logger.error(e.getMessage(), e);
       }
    }
@@ -117,8 +124,8 @@ public class KickermostWindow {
       btnSave.addActionListener(
             ev -> {
                try {
-                  PropertiesLoader.saveProperties(txtBotName.getText(), txtChannel.getText(), txtBotIconUrl.getText(), txtWebhookUrl.getText());
-                  this.propertiesHolder = PropertiesLoader.createPropertiesHolder();
+                  PropertiesLoader.saveProperties(configFilePath, txtBotName.getText(), txtChannel.getText(), txtBotIconUrl.getText(), txtWebhookUrl.getText());
+                  this.propertiesHolder = PropertiesLoader.createPropertiesHolder(configFilePath);
                   this.client.setPropertiesHolder(propertiesHolder);
                } catch (UnableToParsePropertiesFileException | UnableToSavePropertiesFileException e) {
                   logger.error(e.getMessage(), e);

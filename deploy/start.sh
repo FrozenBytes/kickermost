@@ -1,1 +1,1 @@
-java -jar ./kickermost.jar
+java -jar ./kickermost.jar -config ./config.properties

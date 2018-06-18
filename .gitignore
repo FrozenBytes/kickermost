@@ -1,4 +1,6 @@
 .idea/*
 target/*
 *.iml
-*.log
+**.log
+deploy/config.properties
+deploy/kickermost.jar
