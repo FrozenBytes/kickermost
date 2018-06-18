@@ -18,7 +18,7 @@ public enum Country {
     ICELAND("Island", ":iceland:"),
     IR_IRAN("IR Iran", ":iran:"),
     JAPAN("Japan", ":jp:"),
-    KOREA_REPUBLIC("Korea Republik", ":kr:"),
+    KOREA_REPUBLIC("Südkorea", ":kr:"),
     MEXICO("Mexiko", ":mexico:"),
     MOROCCO("Marokko", ":morocco:"),
     NIGERIA("Nigeria", ":nigeria:"),
