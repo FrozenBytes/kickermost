@@ -274,11 +274,12 @@ public class Kicker implements PollingSource {
                     return StoryEvent.PENALTY_FAILURE;
                 case "ergtyp_70-m.png":
                 case "ergtyp_71-m.png":
+                case "ergtyp_70-l_v2.png":
+                case "ergtyp_71-l_v2.png":
                     return StoryEvent.VIDEO_PROOF;
                 default:
                     logger.warn(String.format("Unexpected imageFileName: %s", imageFileName));
                     return StoryEvent.DEFAULT;
-                    //throw new IllegalStateException(String.format("Unexpected imageFileName: %s", imageFileName));
             }
         }
     }
