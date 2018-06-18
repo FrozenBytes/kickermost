@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import static org.junit.Assert.*;
+
+import de.frozenbytes.kickermost.util.comparator.StoryPartTimeLineComparator;
 import org.junit.Test;
 
 public class StoryPartTimeLineComparatorTest {

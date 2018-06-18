@@ -1,4 +1,4 @@
-package de.frozenbytes.kickermost.http;
+package de.frozenbytes.kickermost.io.target.http;
 
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
@@ -8,7 +8,7 @@ import de.frozenbytes.kickermost.dto.type.Country;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 
-public class MattermostMessageBuilder {
+public final class MattermostMessageBuilder {
 
     private static final String NEW_LINE = "\n";
     private static final String HEADLINE_BIG = "## ";

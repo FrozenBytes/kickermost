@@ -17,7 +17,7 @@ import de.frozenbytes.kickermost.dto.type.Country;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import de.frozenbytes.kickermost.exception.UnableToParsePropertiesFileException;
 import de.frozenbytes.kickermost.exception.UnableToSavePropertiesFileException;
-import de.frozenbytes.kickermost.http.MattermostWebhookClient;
+import de.frozenbytes.kickermost.io.target.http.MattermostWebhookClient;
 import de.frozenbytes.kickermost.util.arg.ArgumentResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,10 +7,10 @@ import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Ticker;
-import de.frozenbytes.kickermost.dto.property.StoryPartTimeLineComparator;
+import de.frozenbytes.kickermost.util.comparator.StoryPartTimeLineComparator;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
-import de.frozenbytes.kickermost.http.MattermostWebhookClient;
+import de.frozenbytes.kickermost.io.target.http.MattermostWebhookClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

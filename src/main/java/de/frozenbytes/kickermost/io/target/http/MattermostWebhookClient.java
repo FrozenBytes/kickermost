@@ -1,4 +1,4 @@
-package de.frozenbytes.kickermost.http;
+package de.frozenbytes.kickermost.io.target.http;
 
 import com.google.common.base.Preconditions;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
@@ -21,7 +21,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Handles posting messages to mattermost via webhook integration
  */
-public class MattermostWebhookClient {
+public final class MattermostWebhookClient {
 
     private PropertiesHolder propertiesHolder;
 

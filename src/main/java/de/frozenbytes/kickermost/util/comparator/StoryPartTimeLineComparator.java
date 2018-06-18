@@ -1,10 +1,10 @@
-package de.frozenbytes.kickermost.dto.property;
+package de.frozenbytes.kickermost.util.comparator;
 
 import de.frozenbytes.kickermost.dto.StoryPart;
 
 import java.util.Comparator;
 
-public class StoryPartTimeLineComparator implements Comparator<StoryPart> {
+public final class StoryPartTimeLineComparator implements Comparator<StoryPart> {
 
     @Override
     public int compare(StoryPart message1, StoryPart message2) {

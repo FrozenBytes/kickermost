@@ -12,7 +12,7 @@ import de.frozenbytes.kickermost.dto.property.TeamScore;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import de.frozenbytes.kickermost.exception.MatchNotStartedException;
-import de.frozenbytes.kickermost.http.MattermostWebhookClient;
+import de.frozenbytes.kickermost.io.target.http.MattermostWebhookClient;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
