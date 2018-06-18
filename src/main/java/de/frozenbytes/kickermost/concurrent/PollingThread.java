@@ -66,11 +66,11 @@ public final class PollingThread {
                 }
                 //reload rss feed, if necessary
                 if(rssSourceMap.isEmpty()){
-                    final List<TickerUrl> tickerUrlList = PollingSourceFactory.parseRssFeed(propertiesHolder.getPollingRssFeedUrl(), propertiesHolder.getPollingFssFeedUrlContains());
+                    final List<TickerUrl> tickerUrlList = PollingSourceFactory.parseRssFeed(propertiesHolder);
                     logger.info(String.format("# Initializing - found %d URLs in RSS feed '%s'.", tickerUrlList.size(), propertiesHolder.getPollingRssFeedUrl()));
                     for(TickerUrl url : tickerUrlList){
                         logger.info(url.getValue());
-                        rssSourceMap.put(url, PollingSourceFactory.create(url));
+                        rssSourceMap.put(url, PollingSourceFactory.create(url, propertiesHolder));
                     }
                     if(rssSourceMap.isEmpty()){
                         logger.warn("RssSourceMap is empty. No document could be parsed during the first run!");

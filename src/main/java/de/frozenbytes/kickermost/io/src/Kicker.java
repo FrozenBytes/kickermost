@@ -1,13 +1,20 @@
 package de.frozenbytes.kickermost.io.src;
 
 import com.google.common.base.Preconditions;
+import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Story;
 import de.frozenbytes.kickermost.dto.StoryPart;
-import de.frozenbytes.kickermost.dto.property.*;
+import de.frozenbytes.kickermost.dto.property.GameMinute;
+import de.frozenbytes.kickermost.dto.property.StoryDescription;
+import de.frozenbytes.kickermost.dto.property.StoryTitle;
+import de.frozenbytes.kickermost.dto.property.TeamName;
+import de.frozenbytes.kickermost.dto.property.TeamScore;
+import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import de.frozenbytes.kickermost.exception.MatchNotStartedException;
 import de.frozenbytes.kickermost.exception.ReloadPollingSourceException;
 import de.frozenbytes.kickermost.exception.TickerNotInSourceException;
+import de.frozenbytes.kickermost.util.jsoup.JsoupUtility;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -61,13 +68,16 @@ public class Kicker implements PollingSource {
     private static final String GAME_END = "schlusspfiff";
 
     private final TickerUrl tickerUrl;
+    private final PropertiesHolder propertiesHolder;
     private Document document;
 
 
-    public Kicker(final TickerUrl tickerUrl) {
+    public Kicker(final TickerUrl tickerUrl, final PropertiesHolder propertiesHolder) {
         super();
         Preconditions.checkNotNull(tickerUrl, "tickerUrl should not be null!");
         this.tickerUrl = tickerUrl;
+        Preconditions.checkNotNull(propertiesHolder, "propertiesHolder should not be null!");
+        this.propertiesHolder = propertiesHolder;
     }
 
     @Override
@@ -175,7 +185,7 @@ public class Kicker implements PollingSource {
     @Override
     public void reload() throws ReloadPollingSourceException, TickerNotInSourceException, MatchNotStartedException {
         try {
-            document = Jsoup.connect(tickerUrl.getValue()).get();
+            document = JsoupUtility.requestDocument(tickerUrl.getValue(), propertiesHolder);
             if(document.selectFirst(CSS_ROOT) == null){
                 throw new TickerNotInSourceException(tickerUrl);
             }

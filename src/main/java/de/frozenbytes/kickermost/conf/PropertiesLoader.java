@@ -23,6 +23,9 @@ public class PropertiesLoader {
     public static final String POLLING_TICKER_INTERVAL_MAX = "polling_ticker_interval_max";
     public static final String POLLING_RSS_FEED_URL = "polling_rss_feed_url";
     public static final String POLLING_RSS_FEED_URL_CONTAINS = "polling_rss_feed_url_contains";
+    public static final String POLLING_PROXY_ACTIVE = "polling_proxy_active";
+    public static final String POLLING_PROXY_IP = "polling_proxy_ip";
+    public static final String POLLING_PROXY_PORT = "polling_proxy_port";
 
 
     private PropertiesLoader() {

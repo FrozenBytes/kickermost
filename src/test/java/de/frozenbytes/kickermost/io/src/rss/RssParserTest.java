@@ -25,7 +25,7 @@ public class RssParserTest extends BasicTest {
 
     @Before
     public void before() throws IOException {
-        parser = new RssParser(propertiesHolder.getPollingRssFeedUrl());
+        parser = new RssParser(propertiesHolder);
     }
 
     @Test

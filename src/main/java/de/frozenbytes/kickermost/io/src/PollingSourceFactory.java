@@ -1,5 +1,6 @@
 package de.frozenbytes.kickermost.io.src;
 
+import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.property.basic.Property;
 import de.frozenbytes.kickermost.io.src.rss.RssParser;
@@ -10,14 +11,14 @@ import java.util.stream.Collectors;
 
 public final class PollingSourceFactory {
 
-    public static PollingSource create(TickerUrl url) {
-        return new Kicker(url);
+    public static PollingSource create(final TickerUrl url, final PropertiesHolder propertiesHolder) {
+        return new Kicker(url, propertiesHolder);
     }
 
-    public static List<TickerUrl> parseRssFeed(final String rssUrl, final String rssFeedUrlContains) throws IOException {
-        return new RssParser(rssUrl).parse().stream()
+    public static List<TickerUrl> parseRssFeed(final PropertiesHolder propertiesHolder) throws IOException {
+        return new RssParser(propertiesHolder).parse().stream()
                 .map(Property::getValue)
-                .filter(v -> v.contains(rssFeedUrlContains))
+                .filter(v -> v.contains(propertiesHolder.getPollingFssFeedUrlContains()))
                 .map(TickerUrl::create)
                 .collect(Collectors.toList());
     }

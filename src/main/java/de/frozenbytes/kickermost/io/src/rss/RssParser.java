@@ -1,8 +1,8 @@
 package de.frozenbytes.kickermost.io.src.rss;
 
-import com.google.common.base.Preconditions;
+import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.property.RssLink;
-import org.jsoup.Jsoup;
+import de.frozenbytes.kickermost.util.jsoup.JsoupUtility;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -17,10 +17,8 @@ public final class RssParser {
     private final Document document;
 
 
-    public RssParser(String url) throws IOException {
-        Preconditions.checkNotNull(url, "url should not be null!");
-        Preconditions.checkArgument(!url.trim().isEmpty(), "url should not be empty!");
-        this.document = Jsoup.connect(url).get();
+    public RssParser(final PropertiesHolder propertiesHolder) throws IOException {
+        this.document = JsoupUtility.requestDocument(propertiesHolder.getPollingRssFeedUrl(), propertiesHolder);
     }
 
     public List<RssLink> parse(){

@@ -25,7 +25,7 @@ public class KickerTest extends BasicTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         propertiesHolder = PropertiesLoader.createPropertiesHolder(CONFIG_FILEPATH);
-        kicker = new Kicker(TickerUrl.create(URL));
+        kicker = new Kicker(TickerUrl.create(URL), propertiesHolder);
         kicker.reload();
     }
 
@@ -72,7 +72,7 @@ public class KickerTest extends BasicTest {
 
     @Test(expected = MatchNotStartedException.class)
     public void testMatchNotStarted() throws Exception {
-        new Kicker(TickerUrl.create(URL_MATCH_NOT_STARTED)).reload();
+        new Kicker(TickerUrl.create(URL_MATCH_NOT_STARTED), propertiesHolder).reload();
     }
 
     /*

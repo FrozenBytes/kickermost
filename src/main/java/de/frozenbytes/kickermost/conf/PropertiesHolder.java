@@ -19,6 +19,9 @@ public final class PropertiesHolder {
     private final String pollingRssFeedUrl;
     private final String pollingFssFeedUrlContains;
 
+    private final boolean pollingProxyActive;
+    private final String pollingProxyIP;
+    private final int pollingProxyPort;
 
     public PropertiesHolder(final Properties properties) {
         this.mattermostUsername = getStringProperty(properties, PropertiesLoader.USERNAME);
@@ -31,6 +34,9 @@ public final class PropertiesHolder {
         this.pollingTickerIntervalMax = getIntProperty(properties, PropertiesLoader.POLLING_TICKER_INTERVAL_MAX);
         this.pollingRssFeedUrl = getStringProperty(properties, PropertiesLoader.POLLING_RSS_FEED_URL);
         this.pollingFssFeedUrlContains = getStringProperty(properties, PropertiesLoader.POLLING_RSS_FEED_URL_CONTAINS);
+        this.pollingProxyActive = getBooleanProperty(properties, PropertiesLoader.POLLING_PROXY_ACTIVE);
+        this.pollingProxyIP = getStringProperty(properties, PropertiesLoader.POLLING_PROXY_IP);
+        this.pollingProxyPort = getIntProperty(properties, PropertiesLoader.POLLING_PROXY_PORT);
     }
 
     public String getMattermostUsername() {
@@ -73,6 +79,18 @@ public final class PropertiesHolder {
         return pollingFssFeedUrlContains;
     }
 
+    public boolean isPollingProxyActive() {
+        return pollingProxyActive;
+    }
+
+    public String getPollingProxyIP() {
+        return pollingProxyIP;
+    }
+
+    public int getPollingProxyPort() {
+        return pollingProxyPort;
+    }
+
     private String getStringProperty(final Properties properties, final String key){
         validatePropertiesKey(properties, key);
         validatePropertiesStringValue(properties, key);
@@ -83,6 +101,12 @@ public final class PropertiesHolder {
         validatePropertiesKey(properties, key);
         validatePropertiesIntegerValue(properties, key);
         return Integer.parseInt(properties.getProperty(key));
+    }
+
+    private boolean getBooleanProperty(final Properties properties, final String key){
+        validatePropertiesKey(properties, key);
+        validatePropertiesBooleanValue(properties, key);
+        return Boolean.parseBoolean(properties.getProperty(key));
     }
 
     private void validatePropertiesKey(final Properties properties, final String key){
@@ -98,6 +122,12 @@ public final class PropertiesHolder {
         final String value = properties.getProperty(key);
         Preconditions.checkState(!value.trim().isEmpty(), String.format("Expected the int value for the key '%s' to be filled!", key));
         Preconditions.checkState(value.matches("^\\d+$"), String.format("Expected the int value for the key '%s' to match the pattern '^\\d+$', but was '%s'!", key, value));
+    }
+
+    private void validatePropertiesBooleanValue(final Properties properties, final String key){
+        final String value = properties.getProperty(key);
+        Preconditions.checkState(!value.trim().isEmpty(), String.format("Expected the boolean value for the key '%s' to be filled!", key));
+        Preconditions.checkState(value.matches("^(true|false)?$"), String.format("Expected the boolean value for the key '%s' to match the pattern '^(true|false)?$', but was '%s'!", key, value));
     }
 
 }
