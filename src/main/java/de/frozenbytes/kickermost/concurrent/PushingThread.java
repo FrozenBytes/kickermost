@@ -67,7 +67,11 @@ public class PushingThread extends Thread {
 
             //set sentToMattermostFlag by remembered storyParts
             for(StoryPart fileStoryPart : sendMessages){
-                final StoryPart messageParameter = messageParameters.get(messageParameters.indexOf(fileStoryPart));
+                int index = messageParameters.indexOf(fileStoryPart);
+                if(index == -1){
+                    continue;
+                }
+                final StoryPart messageParameter = messageParameters.get(index);
                 if(messageParameter != null){
                     messageParameter.setSentToMattermost(true);
                 }
@@ -88,7 +92,7 @@ public class PushingThread extends Thread {
                     // the message is at least 2 minutes old
                     if(isStartStopEvent(partToSend.getEvent()) ||
                        partToSend.getDescription() != null ||
-                       partToSend.getTime() != null && partToSend.getTime().isBefore(LocalTime.now().minusMinutes(2))) {
+                       partToSend.getTime() != null && partToSend.getTime().isBefore(LocalTime.now().minusMinutes(3))) {
                         client.postMessage(match, partToSend);
                         partToSend.setSentToMattermost(true);
                     }
