@@ -58,6 +58,7 @@ public class Kicker implements PollingSource {
     private static final String CSS_STORY_SUB_TEXT = "div.ltereigtxt";
     private static final String CSS_STORY_SUB_ICON = "div.tickerIcon";
     private static final String CSS_STORY_HALF_TIME = "div.tickerHalbzeitText";
+    private static final String CSS_STORY_STATISTICS = "div.tickerOpta";
 
     private static final String HALF_TIME_START = "anpfiff";
     private static final String HALF_TIME_END = "abpfiff";
@@ -218,25 +219,33 @@ public class Kicker implements PollingSource {
         return StoryDescription.create(parseTextBlock(storyDescriptionElement, false));
     }
 
-    private String parseTextBlock(Element element, boolean title){
+    private String parseTextBlock(final Element element, final boolean title){
         final String html = element.html();
         if(html == null){
             return null;
         }
         final String[] parts = html.split("<br>");
         if(title){
-            return reparseHtmlAndRecieveText(parts[0]);
+            return reparseAndModifyHtmlTextBlock(parts[0]);
         }else{
             final String descriptionPart = Stream.of(parts).skip(1).collect(Collectors.joining("<br>"));
-            return reparseHtmlAndRecieveText(descriptionPart);
+            return reparseAndModifyHtmlTextBlock(descriptionPart);
         }
     }
 
-    private String reparseHtmlAndRecieveText(String html){
+    private String reparseAndModifyHtmlTextBlock(final String html){
         if(html == null || html.trim().isEmpty()){
             return null;
         }
-        return Jsoup.parse(html).text();
+        return removeStatistics(Jsoup.parse(html)).text();
+    }
+
+    private Document removeStatistics(final Document document){
+        final Element statisticsElement = document.selectFirst(CSS_STORY_STATISTICS);
+        if(statisticsElement != null){
+            statisticsElement.remove();
+        }
+        return document;
     }
 
     private StoryEvent parseStoryEvent(final Element tickerIconElement){
