@@ -6,6 +6,8 @@ import java.io.IOException;
 
 public final class ReloadPollingSourceException extends IOException {
 
+    private static final long serialVersionUID = 6363715431290792445L;
+
     private final TickerUrl tickerUrl;
 
     public ReloadPollingSourceException(final TickerUrl tickerUrl, final IOException cause) {

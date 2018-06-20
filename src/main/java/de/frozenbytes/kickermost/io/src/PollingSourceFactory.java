@@ -3,6 +3,7 @@ package de.frozenbytes.kickermost.io.src;
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.property.basic.Property;
+import de.frozenbytes.kickermost.exception.UnableToParseRssFeedException;
 import de.frozenbytes.kickermost.io.src.rss.RssParser;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ public final class PollingSourceFactory {
         return new Kicker(url, propertiesHolder);
     }
 
-    public static List<TickerUrl> parseRssFeed(final PropertiesHolder propertiesHolder) throws IOException {
+    public static List<TickerUrl> parseRssFeed(final PropertiesHolder propertiesHolder) throws UnableToParseRssFeedException {
         return new RssParser(propertiesHolder).parse().stream()
                 .map(Property::getValue)
                 .filter(v -> v.contains(propertiesHolder.getPollingFssFeedUrlContains()))

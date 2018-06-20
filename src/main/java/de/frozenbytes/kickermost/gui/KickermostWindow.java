@@ -16,6 +16,7 @@ import de.frozenbytes.kickermost.dto.property.TeamScore;
 import de.frozenbytes.kickermost.dto.type.Country;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
 import de.frozenbytes.kickermost.exception.UnableToParsePropertiesFileException;
+import de.frozenbytes.kickermost.exception.UnableToPostToMattermostException;
 import de.frozenbytes.kickermost.exception.UnableToSavePropertiesFileException;
 import de.frozenbytes.kickermost.io.target.http.MattermostWebhookClient;
 import de.frozenbytes.kickermost.util.arg.ArgumentResolver;
@@ -115,7 +116,11 @@ public class KickermostWindow {
 
          ConfirmSendMessageDialog dlg = new ConfirmSendMessageDialog();
          if (dlg.isSend()) {
-            client.postMessage(match, messageParameters);
+            try {
+               client.postMessage(match, messageParameters);
+            } catch (UnableToPostToMattermostException e1) {
+               logger.error(e1.getMessage(), e1);
+            }
          }
       });
 

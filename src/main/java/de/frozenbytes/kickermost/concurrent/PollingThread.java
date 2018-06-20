@@ -13,13 +13,12 @@ import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.exception.MatchNotStartedException;
 import de.frozenbytes.kickermost.exception.ReloadPollingSourceException;
 import de.frozenbytes.kickermost.exception.TickerNotInSourceException;
+import de.frozenbytes.kickermost.exception.UnableToParseRssFeedException;
 import de.frozenbytes.kickermost.exception.UnexpectedThreadException;
 import de.frozenbytes.kickermost.io.src.PollingSource;
 import de.frozenbytes.kickermost.io.src.PollingSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +58,10 @@ public final class PollingThread {
         try {
             Long rssLastRefreshedMs = null;
             while(true){
+
+                //interval run
+                waitForGlobal();
+
                 //force the reload of the rss feed once an hour
                 if(rssLastRefreshedMs == null || getCurrentMilliseconds() > (rssLastRefreshedMs + HOUR_IN_MS)){
                     rssLastRefreshedMs = getCurrentMilliseconds();
@@ -66,35 +69,37 @@ public final class PollingThread {
                 }
                 //reload rss feed, if necessary
                 if(rssSourceMap.isEmpty()){
-                    final List<TickerUrl> tickerUrlList = PollingSourceFactory.parseRssFeed(propertiesHolder);
-                    logger.info(String.format("# Initializing - found %d URLs in RSS feed '%s'.", tickerUrlList.size(), propertiesHolder.getPollingRssFeedUrl()));
-                    for(TickerUrl url : tickerUrlList){
-                        logger.info(url.getValue());
-                        rssSourceMap.put(url, PollingSourceFactory.create(url, propertiesHolder));
-                    }
-                    if(rssSourceMap.isEmpty()){
-                        logger.warn("RssSourceMap is empty. No document could be parsed during the first run!");
+                    try{
+                        final List<TickerUrl> tickerUrlList = PollingSourceFactory.parseRssFeed(propertiesHolder);
+                        logger.info(String.format("# Initializing - found %d URLs in RSS feed '%s'.", tickerUrlList.size(), propertiesHolder.getPollingRssFeedUrl()));
+                        for(TickerUrl url : tickerUrlList){
+                            logger.info(url.getValue());
+                            rssSourceMap.put(url, PollingSourceFactory.create(url, propertiesHolder));
+                        }
+                        if(rssSourceMap.isEmpty()){
+                            logger.warn("RssSourceMap is empty. No document could be parsed during the first run!");
+                        }
+                    }catch (UnableToParseRssFeedException e){
+                        logger.warn(e.getMessage(), e); //handle and survive network issues
+                        continue;
                     }
                 }
-
-                //interval run
-                waitForGlobal();
 
                 for(TickerUrl tickerUrl : rssSourceMap.keySet()){
                     waitForTicker(tickerUrl);
 
                     final PollingSource source = rssSourceMap.get(tickerUrl);
-                    try{
+                    try {
                         source.reload();
 
                         final ExchangeStorage storage = ExchangeStorage.getInstance();
 
                         Ticker ticker;
-                        if(storage.containsTickerWithUrl(tickerUrl)){
+                        if (storage.containsTickerWithUrl(tickerUrl)) {
                             ticker = storage.getTickerByUrl(tickerUrl);
                             ticker.getMatch().getTeamA().setScore(source.getTeamAScore());
                             ticker.getMatch().getTeamB().setScore(source.getTeamBScore());
-                        }else{
+                        } else {
                             ticker = new Ticker(tickerUrl, createMatchFromSource(source));
                             storage.addTicker(ticker);
                         }
@@ -102,17 +107,19 @@ public final class PollingThread {
                         final Match match = ticker.getMatch();
                         final ImmutableList<StoryPart> prevStoryPartList = match.getStory();
                         final Story currentStory = source.getStory();
-                        for(StoryPart currentStoryPart : currentStory){
-                            if(!prevStoryPartList.contains(currentStoryPart)){
+                        for (StoryPart currentStoryPart : currentStory) {
+                            if (!prevStoryPartList.contains(currentStoryPart)) {
                                 match.addStoryPart(currentStoryPart); //update the previous story with the new content
                             }
                         }
-                    }catch (TickerNotInSourceException | ReloadPollingSourceException | MatchNotStartedException e){
+                    }catch (ReloadPollingSourceException e){
+                        logger.warn(e.getMessage(), e); //handle and survive network issues
+                    }catch (TickerNotInSourceException | MatchNotStartedException e){
                         logger.info(e.getMessage());
                     }
                 }
             }
-        } catch (InterruptedException | IOException e) {
+        } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
             throw new UnexpectedThreadException(e);
         }

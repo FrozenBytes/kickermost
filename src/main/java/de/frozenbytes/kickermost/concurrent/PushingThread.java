@@ -7,6 +7,8 @@ import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.Match;
 import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Ticker;
+import de.frozenbytes.kickermost.exception.UnableToPostToMattermostException;
+import de.frozenbytes.kickermost.exception.UnexpectedThreadException;
 import de.frozenbytes.kickermost.util.comparator.StoryPartTimeLineComparator;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
@@ -42,10 +44,10 @@ public class PushingThread extends Thread {
     public void run() {
         while (true){
             try {
-                Thread.sleep(500);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
-                break;
+                throw new UnexpectedThreadException(e);
             }
             final ExchangeStorage storage = ExchangeStorage.getInstance();
             final Ticker ticker = storage.getTickerByUrl(tickerUrl);
@@ -93,8 +95,13 @@ public class PushingThread extends Thread {
                     if(isStartStopEvent(partToSend.getEvent()) ||
                        partToSend.getDescription() != null ||
                        partToSend.getTime() != null && partToSend.getTime().isBefore(LocalTime.now().minusMinutes(3))) {
-                        client.postMessage(match, partToSend);
-                        partToSend.setSentToMattermost(true);
+                        try {
+                            client.postMessage(match, partToSend);
+                            partToSend.setSentToMattermost(true);
+                        } catch (UnableToPostToMattermostException e) {
+                            logger.warn(e.getMessage(), e); //handle and survive network issues
+                            break;
+                        }
                     }
                 }
             }

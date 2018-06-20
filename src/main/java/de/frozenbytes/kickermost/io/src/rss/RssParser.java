@@ -2,6 +2,7 @@ package de.frozenbytes.kickermost.io.src.rss;
 
 import de.frozenbytes.kickermost.conf.PropertiesHolder;
 import de.frozenbytes.kickermost.dto.property.RssLink;
+import de.frozenbytes.kickermost.exception.UnableToParseRssFeedException;
 import de.frozenbytes.kickermost.util.jsoup.JsoupUtility;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,8 +18,13 @@ public final class RssParser {
     private final Document document;
 
 
-    public RssParser(final PropertiesHolder propertiesHolder) throws IOException {
-        this.document = JsoupUtility.requestDocument(propertiesHolder.getPollingRssFeedUrl(), propertiesHolder);
+    public RssParser(final PropertiesHolder propertiesHolder) throws UnableToParseRssFeedException {
+        final String rssFeedUrl = propertiesHolder.getPollingRssFeedUrl();
+        try {
+            this.document = JsoupUtility.requestDocument(rssFeedUrl, propertiesHolder);
+        } catch (IOException e) {
+            throw new UnableToParseRssFeedException(rssFeedUrl, e);
+        }
     }
 
     public List<RssLink> parse(){
