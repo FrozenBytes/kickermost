@@ -39,8 +39,6 @@ public class Kickermost {
             pollingThread.start();
 
             while (pollingThread.isAlive()){
-                Thread.sleep(500);
-
                 ExchangeStorage storage = ExchangeStorage.getInstance();
                 List<Ticker> activeTickers = getActiveTickers(storage);
 
@@ -58,6 +56,8 @@ public class Kickermost {
                         activePushingThreads.remove(entry.getKey());
                     }
                 }
+                //check for new Ticker every minute
+                Thread.sleep(60000);
             }
         }catch (Exception e){
             logger.error(e.getMessage(), e);
@@ -76,7 +76,7 @@ public class Kickermost {
             boolean gameActive = true;
             while (storyPartIterator.hasNext()) {
                 StoryPart storyPart = storyPartIterator.next();
-                if (storyPart.getEvent() == StoryEvent.GAME_END) {
+                if (storyPart.getEvent() == StoryEvent.GAME_END && storyPart.isSentToMattermost()) {
                     gameActive = false;
                     break;
                 }

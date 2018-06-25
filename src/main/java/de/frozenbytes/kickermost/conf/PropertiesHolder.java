@@ -15,6 +15,7 @@ public final class PropertiesHolder {
     private final int pollingGlobalIntervalMax;
     private final int pollingTickerIntervalMin;
     private final int pollingTickerIntervalMax;
+    private final int pollingUpdateTime;
 
     private final String pollingRssFeedUrl;
     private final String pollingFssFeedUrlContains;
@@ -32,6 +33,7 @@ public final class PropertiesHolder {
         this.pollingGlobalIntervalMax = getIntProperty(properties, PropertiesLoader.POLLING_GLOBAL_INTERVAL_MAX);
         this.pollingTickerIntervalMin = getIntProperty(properties, PropertiesLoader.POLLING_TICKER_INTERVAL_MIN);
         this.pollingTickerIntervalMax = getIntProperty(properties, PropertiesLoader.POLLING_TICKER_INTERVAL_MAX);
+        this.pollingUpdateTime = getIntProperty(properties, PropertiesLoader.POLLING_UPDATE_TIME);
         this.pollingRssFeedUrl = getStringProperty(properties, PropertiesLoader.POLLING_RSS_FEED_URL);
         this.pollingFssFeedUrlContains = getStringProperty(properties, PropertiesLoader.POLLING_RSS_FEED_URL_CONTAINS);
         this.pollingProxyActive = getBooleanProperty(properties, PropertiesLoader.POLLING_PROXY_ACTIVE);
@@ -69,6 +71,10 @@ public final class PropertiesHolder {
 
     public int getPollingTickerIntervalMax() {
         return pollingTickerIntervalMax;
+    }
+
+    public int getPollingUpdateTime() {
+        return pollingUpdateTime;
     }
 
     public String getPollingRssFeedUrl() {

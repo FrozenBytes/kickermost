@@ -19,6 +19,8 @@ import de.frozenbytes.kickermost.io.src.PollingSource;
 import de.frozenbytes.kickermost.io.src.PollingSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -110,6 +112,8 @@ public final class PollingThread {
                         for (StoryPart currentStoryPart : currentStory) {
                             if (!prevStoryPartList.contains(currentStoryPart)) {
                                 match.addStoryPart(currentStoryPart); //update the previous story with the new content
+                            } else {
+                                updatePreviousStoryPart(prevStoryPartList, currentStoryPart);
                             }
                         }
                     }catch (ReloadPollingSourceException e){
@@ -122,6 +126,30 @@ public final class PollingThread {
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
             throw new UnexpectedThreadException(e);
+        }
+    }
+
+    /**
+     * Kicker always posts a story part right away which only contains the event type and a general title.
+     * Afterwards more description is added. Because of that the already stored story parts must be updated.
+     * <p>
+     * Only story parts which are younger than polling_update_time minutes are considered for updates.
+     *
+     * @param prevStoryPartList the list of the previously polled story parts
+     * @param currentStoryPart  the current story part
+     */
+    private void updatePreviousStoryPart(ImmutableList<StoryPart> prevStoryPartList, StoryPart currentStoryPart) {
+        StoryPart prevPart = prevStoryPartList.get(prevStoryPartList.indexOf(currentStoryPart));
+        if(prevPart.getTime() == null){
+            return;
+        }
+        if (prevPart.getTime().isAfter(LocalTime.now().minusSeconds(propertiesHolder.getPollingUpdateTime()))) {
+            if (currentStoryPart.getTitle() != null && currentStoryPart.getTitle().getValue() != null) {
+                prevPart.getTitle().updateProperty(currentStoryPart.getTitle().getValue());
+            }
+            if (currentStoryPart.getDescription() != null && currentStoryPart.getDescription().getValue() != null) {
+                prevPart.getDescription().updateProperty(currentStoryPart.getDescription().getValue());
+            }
         }
     }
 

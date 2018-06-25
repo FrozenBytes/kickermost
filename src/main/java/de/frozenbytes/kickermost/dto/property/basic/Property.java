@@ -10,7 +10,7 @@ public abstract class Property<T> implements Serializable {
 
     private static final long serialVersionUID = -6634565114087203376L;
 
-    protected final T value;
+    protected T value;
 
     public Property(T value) {
         super();
@@ -40,4 +40,8 @@ public abstract class Property<T> implements Serializable {
         return value.toString();
     }
 
+    public void updateProperty(T value){
+        Preconditions.checkNotNull(value, "value should not be null");
+        this.value = value;
+    }
 }

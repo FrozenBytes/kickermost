@@ -29,6 +29,7 @@ public class PushingThread extends Thread {
 
     private final TickerUrl tickerUrl;
     private final MattermostWebhookClient client;
+    private final PropertiesHolder propertiesHolder;
 
 
     public PushingThread(final PropertiesHolder propertiesHolder, final TickerUrl tickerUrl) {
@@ -37,18 +38,13 @@ public class PushingThread extends Thread {
         Preconditions.checkNotNull(tickerUrl, "tickerUrl should not be null!");
         this.tickerUrl = tickerUrl;
         this.client = new MattermostWebhookClient(propertiesHolder);
+        this.propertiesHolder = propertiesHolder;
         this.setDaemon(true);
     }
 
     @Override
     public void run() {
         while (true){
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
-                throw new UnexpectedThreadException(e);
-            }
             final ExchangeStorage storage = ExchangeStorage.getInstance();
             final Ticker ticker = storage.getTickerByUrl(tickerUrl);
 
@@ -89,12 +85,7 @@ public class PushingThread extends Thread {
             partsToSendList.sort(new StoryPartTimeLineComparator());
             for(StoryPart partToSend : partsToSendList){
                 if(isAllowedEvent(partToSend.getEvent())) {
-                    // Send message if it is a game start/stop/end message OR
-                    // the description is filled OR
-                    // the message is at least 2 minutes old
-                    if(isStartStopEvent(partToSend.getEvent()) ||
-                       partToSend.getDescription() != null ||
-                       partToSend.getTime() != null && partToSend.getTime().isBefore(LocalTime.now().minusMinutes(3))) {
+                    if(isWorthSending(partToSend)) {
                         try {
                             client.postMessage(match, partToSend);
                             partToSend.setSentToMattermost(true);
@@ -119,7 +110,36 @@ public class PushingThread extends Thread {
             if(sendMessages.stream().anyMatch(storyPart -> storyPart.getEvent() == StoryEvent.GAME_END)){
                 break;
             }
+
+            // wait 30 seconds
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+                throw new UnexpectedThreadException(e);
+            }
         }
+    }
+
+    /**
+     * Send message if it is a game start/stop/end message OR
+     * the description is filled OR
+     * the message is at least polling_update_time minutes old
+     *
+     * @param partToSend story part to check
+     * @return true if worth sending
+     */
+    private boolean isWorthSending(StoryPart partToSend) {
+        if (isStartStopEvent(partToSend.getEvent())) {
+            return true;
+        }
+        if (partToSend.getDescription() != null && partToSend.getDescription().getValue() != null && !partToSend.getDescription().getValue().isEmpty()) {
+            return true;
+        }
+        if (partToSend.getTime() != null && partToSend.getTime().isBefore(LocalTime.now().minusSeconds(propertiesHolder.getPollingUpdateTime()))) {
+            return true;
+        }
+        return partToSend.getSystemTime().isBefore(LocalTime.now().minusSeconds(propertiesHolder.getPollingUpdateTime()));
     }
 
     private String convertTickerUrlToFileName(TickerUrl tickerUrl){
