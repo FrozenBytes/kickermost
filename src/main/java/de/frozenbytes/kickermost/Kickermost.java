@@ -51,11 +51,8 @@ public class Kickermost {
                     }
                 }
 
-                for(Map.Entry<TickerUrl, PushingThread> entry : activePushingThreads.entrySet()){
-                    if(!entry.getValue().isAlive()){
-                        activePushingThreads.remove(entry.getKey());
-                    }
-                }
+                activePushingThreads.entrySet().removeIf(activePushingThreadEntry -> !activePushingThreadEntry.getValue().isAlive());
+
                 //check for new Ticker every minute
                 Thread.sleep(60000);
             }
