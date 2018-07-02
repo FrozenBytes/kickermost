@@ -11,18 +11,20 @@ public enum StoryEvent {
     RED_CARD(":closed_book:"),
     YELLOW_RED_CARD(":ledger::closed_book:"),
     PENALTY(":goal_net:"),
-    PENALTY_FAILURE(":goal_net:"),
+    PENALTY_GOAL(":soccer:"),
+    PENALTY_FAILURE(":x:"),
     VIDEO_PROOF(":movie_camera:"),
 
     HALF_TIME_A_START(":arrow_forward:"),
     HALF_TIME_A_END(":pause_button:"),
     HALF_TIME_B_START(":arrow_forward:"),
-    HALF_TIME_B_END(":pause_button:"),
+    HALF_TIME_B_END(":stop_button:"),
     OVERTIME_A_START(":arrow_forward:"),
     OVERTIME_A_END(":pause_button:"),
     OVERTIME_B_START(":arrow_forward:"),
     OVERTIME_B_END(":pause_button:"),
-    PENALTIES_TIME(":goal_net:"),
+    PENALTIES_START(":arrow_forward:"),
+    PENALTIES_END(":stop_button:"),
     GAME_END(":stop_button:"),
 
     DEFAULT("")
@@ -39,7 +41,8 @@ public enum StoryEvent {
             OVERTIME_A_END,
             OVERTIME_B_START,
             OVERTIME_B_END,
-            PENALTIES_TIME,
+            PENALTIES_START,
+            PENALTIES_END,
             GAME_END,};
 
     StoryEvent(String mattermostCode){

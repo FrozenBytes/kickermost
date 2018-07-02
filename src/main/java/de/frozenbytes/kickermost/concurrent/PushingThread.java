@@ -9,6 +9,7 @@ import de.frozenbytes.kickermost.dto.StoryPart;
 import de.frozenbytes.kickermost.dto.Ticker;
 import de.frozenbytes.kickermost.exception.UnableToPostToMattermostException;
 import de.frozenbytes.kickermost.exception.UnexpectedThreadException;
+import de.frozenbytes.kickermost.util.GameActiveDecider;
 import de.frozenbytes.kickermost.util.comparator.StoryPartTimeLineComparator;
 import de.frozenbytes.kickermost.dto.property.TickerUrl;
 import de.frozenbytes.kickermost.dto.type.StoryEvent;
@@ -107,7 +108,7 @@ public class PushingThread extends Thread {
             }
 
             //Game Over - terminate thread
-            if(sendMessages.stream().anyMatch(storyPart -> storyPart.getEvent() == StoryEvent.GAME_END)){
+            if(new GameActiveDecider(sendMessages).isGameOver()){
                 break;
             }
 

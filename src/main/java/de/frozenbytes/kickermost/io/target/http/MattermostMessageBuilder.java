@@ -31,6 +31,7 @@ public final class MattermostMessageBuilder {
     private static String buildMattermostMessage(final Match match, final StoryPart messageParameters) {
         switch (messageParameters.getEvent()) {
             case GOAL:
+            case PENALTY_GOAL:
                 return buildGoalMessage(match, messageParameters, GOAL);
             case GOAL_OWN:
                 return buildGoalMessage(match, messageParameters, OWN_GOAL);
@@ -52,7 +53,8 @@ public final class MattermostMessageBuilder {
             case OVERTIME_B_START:
             case OVERTIME_B_END:
             case GAME_END:
-            case PENALTIES_TIME:
+            case PENALTIES_START:
+            case PENALTIES_END:
                 return buildKickOffMessage(match, messageParameters);
             case VIDEO_PROOF:
             case DEFAULT:

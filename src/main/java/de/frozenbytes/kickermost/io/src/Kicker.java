@@ -278,6 +278,8 @@ public class Kicker implements PollingSource {
                 case "ergtyp_30-m.png":
                 case "ergtyp_30-l_v2.png":
                     return StoryEvent.PENALTY;
+                case "icon-penaltygoal-24.png":
+                    return StoryEvent.PENALTY_GOAL;
                 case "ergtyp_7-m.png":
                 case "ergtyp_7-l_v2.png":
                     return StoryEvent.PENALTY_FAILURE;
@@ -299,15 +301,22 @@ public class Kicker implements PollingSource {
         if(containsAllStrings(lowerHalfTimeText, GAME_END)){
             return createHalfTimeStoryPart(StoryEvent.GAME_END, halfTimeText);
         }
-        //penalties
-        if(containsAllStrings(lowerHalfTimeText, PENALTIES)){
-            return createHalfTimeStoryPart(StoryEvent.PENALTIES_TIME, halfTimeText);
+
+        //penalties end
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_END, PENALTIES)){
+            return createHalfTimeStoryPart(StoryEvent.PENALTIES_START, halfTimeText);
+        }
+
+        //penalties start
+        if(containsAllStrings(lowerHalfTimeText, HALF_TIME_START, PENALTIES)){
+            return createHalfTimeStoryPart(StoryEvent.PENALTIES_START, halfTimeText);
         }
 
         //overtime b end
         if(containsAllStrings(lowerHalfTimeText, HALF_TIME_END, HALF_TIME_B, OVERTIME)){
             return createHalfTimeStoryPart(StoryEvent.OVERTIME_B_END, halfTimeText);
         }
+
         //overtime b start
         if(containsAllStrings(lowerHalfTimeText, HALF_TIME_START, HALF_TIME_B, OVERTIME)){
             return createHalfTimeStoryPart(StoryEvent.OVERTIME_B_START, halfTimeText);
@@ -325,14 +334,17 @@ public class Kicker implements PollingSource {
         if(containsAllStrings(lowerHalfTimeText, HALF_TIME_END, HALF_TIME_B)){
             return createHalfTimeStoryPart(StoryEvent.HALF_TIME_B_END, halfTimeText);
         }
+
         //halftime b start
         if(containsAllStrings(lowerHalfTimeText, HALF_TIME_START, HALF_TIME_B)){
             return createHalfTimeStoryPart(StoryEvent.HALF_TIME_B_START, halfTimeText);
         }
+
         //halftime a end
         if(containsAllStrings(lowerHalfTimeText, HALF_TIME_END, HALF_TIME_A)){
             return createHalfTimeStoryPart(StoryEvent.HALF_TIME_A_END, halfTimeText);
         }
+
         //halftime a start
         if(containsAllStrings(lowerHalfTimeText, HALF_TIME_START, HALF_TIME_A)){
             return createHalfTimeStoryPart(StoryEvent.HALF_TIME_A_START, halfTimeText);
